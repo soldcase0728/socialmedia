@@ -1,0 +1,25 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Logs (the audit log is written to the derived-index folder, not here)
+logs/*
+!logs/.gitkeep
+
+# NEVER commit derived output: the database and OCR cache contain
+# extracted document text.
+Wilson_Rode_Derived_Index/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+ocr_cache/
+*.xlsx
+*.csv
+
+# macOS
+.DS_Store

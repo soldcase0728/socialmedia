@@ -1,0 +1,576 @@
+# =====================================================================
+# Wilson-Rode derived index -- configuration
+# =====================================================================
+# Every path, threshold, regex, issue tag and scoring weight used by the
+# indexer lives here.  Edit this file rather than the source code.
+#
+# SAFETY: `source_folder` is opened read-only.  The application never
+# renames, moves, alters, annotates, OCRs in place, combines or deletes
+# anything beneath it.  All generated files go to `output_folder`.
+# =====================================================================
+
+paths:
+  # Absolute path to the Google Drive-synced production folder.
+  # Leave as `null` to have the CLI auto-detect it (see `wri locate`).
+  # Typical macOS location:
+  #   ~/Library/CloudStorage/GoogleDrive-<account>/My Drive/Wilson-Rode File
+  source_folder: null
+
+  # Name of the source folder to search for when auto-detecting.
+  source_folder_name: "Wilson-Rode File"
+
+  # Where every generated file is written.  Created as a *sibling* of the
+  # source folder when left null.  Never inside the source folder.
+  output_folder: null
+  output_folder_name: "Wilson_Rode_Derived_Index"
+
+  # Directories searched when auto-detecting the source folder.
+  # `~` is expanded.  Missing roots are skipped silently.
+  search_roots:
+    - "~/Library/CloudStorage"
+    - "~/Google Drive"
+    - "~/Documents"
+    - "~/Desktop"
+    - "/Volumes"
+
+  # Maximum directory depth to descend while auto-detecting.
+  search_max_depth: 6
+
+bates:
+  # Regex used to recognise a Bates number in a *filename*.
+  # Group 1 must capture the numeric portion.
+  filename_regex: "WILSONRODE(\\d+)"
+
+  # Regex used to recognise a Bates stamp in *extracted page text*.
+  # Group 1 must capture the numeric portion.
+  page_regex: "WILSONRODE\\s*[-_]?\\s*(\\d{4,10})"
+
+  # Canonical prefix used when re-assembling a normalised Bates number.
+  prefix: "WILSONRODE"
+
+  # Zero-padding width for normalised Bates numbers.
+  pad_width: 6
+
+  # A filename is "pattern compliant" when it matches this regex in full.
+  # The production uses e.g. WILSONRODE000001-null.pdf
+  filename_pattern: "^WILSONRODE\\d{6}-null\\.pdf$"
+
+  # Bates stamps are usually printed in the page footer.  When scanning a
+  # page for a stamp, only the bottom fraction of the page is searched
+  # first; the whole page is searched as a fallback.
+  footer_fraction: 0.18
+
+inventory:
+  # File extensions probed as PDFs.  Everything else is inventoried but
+  # not opened.
+  pdf_extensions: [".pdf"]
+
+  # Files matching these glob patterns are ignored entirely.
+  ignore_globs:
+    - ".DS_Store"
+    - "._*"
+    - "*.tmp"
+    - ".Spotlight-V100/**"
+    - ".Trashes/**"
+    - "**/.git/**"
+
+  # Read size (bytes) used when streaming a file for SHA-256 hashing.
+  hash_chunk_bytes: 1048576
+
+cloud_placeholder:
+  # Google Drive "stream" mode leaves stub files on disk until they are
+  # opened.  These settings control detection and retry rather than
+  # treating a stub as a corrupt file.
+  enabled: true
+  # Files at/under this size that claim to be PDFs are suspicious.
+  max_stub_bytes: 1024
+  # Extensions Drive uses for not-yet-downloaded placeholders.
+  placeholder_extensions: [".gdoc", ".gsheet", ".gslides", ".gdraw", ".gform"]
+  retries: 4
+  backoff_seconds: [2, 4, 8, 16]
+
+performance:
+  # Worker processes for CPU-heavy work.  Kept deliberately conservative
+  # because the source lives on a Drive-synced volume.
+  workers: 4
+  # Hard ceiling regardless of detected CPU count.
+  max_workers: 8
+  # Rows written per database transaction.
+  batch_size: 200
+  # Emit a checkpoint / progress line every N files.
+  checkpoint_every: 250
+  # Per-file wall-clock budget (seconds) for PDF work before giving up.
+  per_file_timeout_seconds: 120
+
+extraction:
+  # Pages examined first when deriving document metadata.  The full
+  # document is only read when these pages are insufficient.
+  head_pages: 3
+  tail_pages: 1
+  # Characters below which a page is not considered to have a usable
+  # text layer.
+  min_chars_for_text_layer: 25
+  # Characters below which a page is a blank candidate.
+  blank_char_threshold: 5
+  # A page whose only text is a Bates stamp (plus this much slack) is
+  # classified as "bates_only".
+  bates_only_extra_chars: 20
+  # Fraction of page area covered by images above which a page with no
+  # text is considered image-only rather than blank.
+  image_coverage_threshold: 0.05
+  # Maximum characters of page text stored in the FTS index per page.
+  max_chars_per_page_stored: 200000
+
+ocr:
+  # OCR is opt-in and only ever writes to the derived-index cache.
+  enabled: false
+  engine: "ocrmypdf"          # "ocrmypdf" or "tesseract"
+  language: "eng"
+  # Skip OCR for pages that already have this many characters.
+  skip_if_chars_over: 25
+  # Do not OCR a page with no meaningful image content.
+  min_image_coverage: 0.05
+  timeout_seconds: 300
+  # Cache directory, relative to the output folder.
+  cache_dirname: "ocr_cache"
+  # Maximum total size of the OCR cache in gigabytes.
+  max_cache_gb: 20
+
+duplicates:
+  # Normalised-text duplicates: text is lowercased, whitespace collapsed
+  # and these patterns removed before hashing.
+  normalize_strip_patterns:
+    - "WILSONRODE\\s*\\d{4,10}"
+    - "\\bPage\\s+\\d+\\s+of\\s+\\d+\\b"
+    - "\\bCONFIDENTIAL\\b"
+  # Minimum normalised characters required before a document takes part
+  # in text/near-duplicate detection.
+  min_chars: 200
+  # SimHash configuration.  Candidate pairs come from LSH banding, so no
+  # O(n^2) comparison is performed.
+  simhash_bits: 64
+  simhash_bands: 8
+  simhash_shingle_size: 4
+  # Hamming distance at/below which two SimHashes are near duplicates.
+  near_duplicate_max_distance: 3
+  # Token-set similarity (rapidfuzz, 0-100) required to confirm a
+  # candidate pair surfaced by LSH.
+  confirm_similarity: 88
+  # Maximum candidate pairs evaluated per LSH bucket (guards against a
+  # pathological bucket of thousands of identical stubs).
+  max_pairs_per_bucket: 5000
+
+email:
+  # Header labels recognised at the start of a line.
+  header_labels:
+    from: ["From", "Sender", "De"]
+    sent: ["Sent", "Date", "Sent On", "Date Sent"]
+    to: ["To", "Recipient", "Para"]
+    cc: ["Cc", "CC", "Copy"]
+    bcc: ["Bcc", "BCC", "Blind Copy"]
+    subject: ["Subject", "Subj", "RE", "Re"]
+    attachments: ["Attachments", "Attachment", "Attach"]
+  # Delimiter used when writing multiple recipients into a report cell.
+  recipient_delimiter: "; "
+  # Lines matching these patterns mark the start of a quoted prior
+  # message inside a chain.
+  chain_separators:
+    - "^-{2,}\\s*Original Message\\s*-{2,}"
+    - "^_{5,}\\s*$"
+    - "^On .{5,120} wrote:\\s*$"
+    - "^-{2,}\\s*Forwarded message\\s*-{2,}"
+    - "^From:\\s"
+  # Maximum embedded messages counted before the parser stops.
+  max_chain_messages: 60
+
+classification:
+  # Document-type rules.  Each rule contributes its weight when any of
+  # its patterns match the sampled text.  The highest-scoring type wins
+  # and the score is reported as a confidence.  Patterns are
+  # case-insensitive regular expressions.
+  rules:
+    email:
+      weight: 3.0
+      patterns:
+        - "^\\s*From:\\s"
+        - "^\\s*Sent:\\s"
+        - "^\\s*Subject:\\s"
+        - "\\b[\\w.+-]+@[\\w-]+\\.[a-z]{2,}\\b"
+    email_chain:
+      weight: 3.5
+      patterns:
+        - "-{2,}\\s*Original Message\\s*-{2,}"
+        - "^On .{5,120} wrote:\\s*$"
+        - "-{2,}\\s*Forwarded message\\s*-{2,}"
+    court_pleading:
+      weight: 3.0
+      patterns:
+        - "IN THE .{0,60}COURT"
+        - "STATE OF MICHIGAN"
+        - "\\bCase No\\.?\\b"
+        - "\\bPlaintiff\\b.{0,80}\\bDefendant\\b"
+        - "\\bCOMPLAINT\\b"
+        - "\\bANSWER\\b.{0,40}\\bAFFIRMATIVE DEFENSE"
+        - "\\bMOTION\\b"
+        - "\\bBRIEF IN SUPPORT\\b"
+        - "\\bPROOF OF SERVICE\\b"
+    court_order:
+      weight: 3.5
+      patterns:
+        - "\\bIT IS (?:HEREBY )?ORDERED\\b"
+        - "\\bOPINION AND ORDER\\b"
+        - "\\bORDER GRANTING\\b"
+        - "\\bORDER DENYING\\b"
+        - "\\bJUDGMENT\\b"
+    transcript:
+      weight: 3.0
+      patterns:
+        - "\\bTRANSCRIPT\\b"
+        - "\\bCERTIFIED\\b.{0,40}\\bREPORTER\\b"
+        - "^\\s*\\d{1,2}\\s+Q\\.?\\s"
+        - "\\bPROCEEDINGS\\b"
+    deposition:
+      weight: 3.5
+      patterns:
+        - "\\bDEPOSITION OF\\b"
+        - "\\bDEPONENT\\b"
+        - "\\bEXAMINATION BY\\b"
+    contract:
+      weight: 3.0
+      patterns:
+        - "\\bAGREEMENT\\b"
+        - "\\bWHEREAS\\b"
+        - "\\bNOW,? THEREFORE\\b"
+        - "\\bIN WITNESS WHEREOF\\b"
+        - "\\bthe parties (?:hereto )?agree\\b"
+    attorney_notes:
+      weight: 2.0
+      patterns:
+        - "\\bATTORNEY WORK PRODUCT\\b"
+        - "\\bPRIVILEGED AND CONFIDENTIAL\\b"
+        - "\\bnotes to file\\b"
+        - "\\bfile memo\\b"
+    memorandum:
+      weight: 2.5
+      patterns:
+        - "\\bMEMORANDUM\\b"
+        - "^\\s*MEMO\\b"
+        - "^\\s*RE:\\s"
+    letter:
+      weight: 2.0
+      patterns:
+        - "\\bDear (?:Mr|Ms|Mrs|Dr|Judge)\\b"
+        - "\\bVery truly yours\\b"
+        - "\\bSincerely\\b"
+        - "\\bEnclosure(?:s)?\\b"
+    invoice:
+      weight: 3.0
+      patterns:
+        - "\\bINVOICE\\b"
+        - "\\bInvoice No\\.?\\b"
+        - "\\bAmount Due\\b"
+        - "\\bREMIT TO\\b"
+        - "\\bBalance Due\\b"
+        - "\\bStatement of Account\\b"
+    financial_record:
+      weight: 2.0
+      patterns:
+        - "\\bBalance Sheet\\b"
+        - "\\bIncome Statement\\b"
+        - "\\bProfit and Loss\\b"
+        - "\\bGeneral Ledger\\b"
+        - "\\bTrial Balance\\b"
+    expert_report:
+      weight: 3.0
+      patterns:
+        - "\\bEXPERT REPORT\\b"
+        - "\\bRule 26\\b"
+        - "\\bopinions? (?:and|&) bases\\b"
+        - "\\bqualifications\\b.{0,60}\\bcurriculum vitae\\b"
+        - "\\bREBUTTAL REPORT\\b"
+    expert_exhibit:
+      weight: 2.5
+      patterns:
+        - "\\bEXHIBIT\\s+\\d{1,3}\\b"
+        - "\\bSchedule\\s+\\d{1,2}\\b.{0,40}\\bdamages\\b"
+        - "\\bpresent value\\b.{0,60}\\btable\\b"
+    spreadsheet_rendering:
+      weight: 2.0
+      patterns:
+        - "\\bSheet\\d+\\b"
+        - "\\.xlsx?\\b"
+        - "^\\s*(?:[A-Z]{1,2}\\d{1,4}\\s+){4,}"
+    presentation_rendering:
+      weight: 2.0
+      patterns:
+        - "\\.pptx?\\b"
+        - "^\\s*Slide\\s+\\d{1,3}\\b"
+    photograph:
+      weight: 1.5
+      patterns:
+        - "\\bIMG_\\d{3,}\\b"
+        - "\\bDSC\\d{4,}\\b"
+
+  # Minimum normalised score required before a classification is
+  # reported as anything other than "unknown".
+  min_confidence: 0.25
+
+dates:
+  # Only dates inside this window are accepted; anything outside is
+  # reported as uncertain.  Guards against page numbers and phone
+  # fragments parsing as dates.
+  min_year: 1990
+  max_year: 2035
+
+issue_tags:
+  # ------------------------------------------------------------------
+  # Issue tags are SCREENING TOOLS ONLY.  They are keyword hits.  They
+  # are not legal conclusions, privilege calls, or relevance
+  # determinations.  Add, remove or reword freely.
+  # ------------------------------------------------------------------
+  STATUTE_OF_FRAUDS:
+    - "statute of frauds"
+    - "within one year"
+    - "one-year provision"
+    - "one year"
+    - "oral agreement"
+    - "written agreement"
+    - "signed writing"
+    - "Dumas"
+    - "lifetime"
+    - "perpetual"
+    - "forever"
+    - "as long as"
+    - "post-termination commission"
+    - "residual commission"
+
+  PLEADING_AND_WAIVER:
+    - "affirmative defense"
+    - "answer"
+    - "amended answer"
+    - "leave to amend"
+    - "waiver"
+    - "reconsideration"
+    - "preserve for appeal"
+    - "preservation"
+    - "summary disposition"
+    - "JNOV"
+    - "directed verdict"
+
+  JOHN_WILSON:
+    - "John Wilson"
+    - "John J. Wilson"
+    - "reviewed and understood"
+    - "concur"
+    - "interface with Pat"
+    - "at will"
+    - "termination"
+    - "resignation"
+    - "commission agreement"
+    - "Dagenais Issue Follow Up"
+    - "fair resolution"
+
+  PATRICK_RODE:
+    - "Patrick Rode"
+    - "Pat Rode"
+    - "Rode"
+    - "trial strategy"
+    - "jury"
+    - "high standard of proof"
+
+  EXPERT_FAILURE:
+    - "expert"
+    - "rebuttal expert"
+    - "damages expert"
+    - "industry expert"
+    - "CPA"
+    - "life expectancy"
+    - "CDC"
+    - "present value"
+    - "discount rate"
+    - "attrition"
+    - "projected revenue"
+    - "expert exhibit"
+    - "Exhibit 37"
+
+  DAMAGES:
+    - "lost revenue"
+    - "lost customer"
+    - "business value"
+    - "operational disruption"
+    - "attorney fees"
+    - "bankruptcy fees"
+    - "professional fees"
+    - "settlement"
+    - "mitigation"
+    - "financing"
+    - "bonding"
+    - "customer loss"
+
+  CLIENT_FILE:
+    - "client file"
+    - "complete file"
+    - "transfer request"
+    - "file release"
+    - "missing file"
+    - "production"
+    - "archive"
+    - "retention"
+    - "deleted"
+    - "destruction"
+    - "backup"
+    - "PST"
+    - "MBOX"
+    - "email export"
+
+  INSURANCE:
+    - "insurance"
+    - "carrier"
+    - "policy"
+    - "limit"
+    - "claim notice"
+    - "notice of claim"
+    - "tender"
+    - "reservation of rights"
+    - "coverage"
+    - "Aspen"
+
+  APPEAL:
+    - "appeal"
+    - "appellate"
+    - "Court of Appeals"
+    - "reconsideration"
+    - "preservation"
+    - "issue abandoned"
+
+  BANKRUPTCY:
+    - "bankruptcy"
+    - "Chapter 11"
+    - "Subchapter V"
+    - "502(b)(7)"
+    - "plan of reorganization"
+    - "mediation"
+    - "settlement"
+
+issue_tag_options:
+  # Terms are matched case-insensitively on word boundaries.
+  case_sensitive: false
+  whole_word: true
+  # Characters of surrounding text kept as a *locator* (not an excerpt).
+  # Keep small: the workbook must not become a confidential text dump.
+  context_chars: 60
+  # Store the locator string in the database (never in Excel when
+  # `redact_context_in_excel` is true).
+  redact_context_in_excel: true
+  # Maximum hits recorded per (document, tag) pair.
+  max_hits_per_tag: 50
+
+priority:
+  # ------------------------------------------------------------------
+  # Transparent, additive priority score.  Every component that fires
+  # appends a sentence to the score explanation.  A high score means
+  # "review this early", nothing more.  It is NOT evidence of
+  # malpractice and must never be described as such.
+  # ------------------------------------------------------------------
+  enabled: true
+  # Points awarded when a given issue tag is present at all.
+  tag_weights:
+    STATUTE_OF_FRAUDS: 12
+    PLEADING_AND_WAIVER: 10
+    JOHN_WILSON: 8
+    PATRICK_RODE: 6
+    EXPERT_FAILURE: 8
+    DAMAGES: 6
+    CLIENT_FILE: 7
+    INSURANCE: 6
+    APPEAL: 7
+    BANKRUPTCY: 4
+  # Extra points per additional distinct tag beyond the first.
+  multi_tag_bonus: 3
+  max_multi_tag_bonus: 15
+  # Bonus when a high-signal term appears.
+  keyword_bonus:
+    "statute of frauds": 8
+    "lifetime": 5
+    "perpetual": 5
+    "leave to amend": 6
+    "affirmative defense": 5
+    "reservation of rights": 4
+    "client file": 4
+  max_keyword_bonus: 20
+  # Bonus when the derived participants include a key individual.
+  participant_bonus:
+    "wilson": 6
+    "rode": 5
+  # Documents whose content is unique (no text/near duplicate group)
+  # score higher than repetitive copies.
+  unique_content_bonus: 5
+  duplicate_penalty: -6
+  # Bonus when the document date falls in a significant window.
+  # Dates are ISO `YYYY-MM-DD`.  Add or remove windows freely.
+  date_windows: []
+  # Example:
+  # date_windows:
+  #   - {start: "2019-01-01", end: "2019-12-31", points: 5,
+  #      label: "employment-agreement period"}
+  # Documents flagged for manual review get a small nudge so they are
+  # not buried.
+  manual_review_bonus: 3
+  # Scores are clipped to this range before reporting.
+  min_score: 0
+  max_score: 100
+
+reports:
+  # Rows above which a workbook is written in openpyxl write-only mode.
+  # Keeps memory flat for tens of thousands of documents.
+  streaming_threshold: 5000
+  # Column width bounds.
+  min_column_width: 10
+  max_column_width: 60
+  # Create clickable hyperlinks to local source PDFs.
+  hyperlinks: true
+  # Maximum hyperlinks per worksheet (Excel becomes unstable well past
+  # this; remaining rows keep the path as plain text).
+  max_hyperlinks: 60000
+  # Excel cell hard limit is 32767 characters; truncate below it.
+  max_cell_chars: 3000
+
+qc:
+  # Sample sizes for the post-run quality-control workbook.
+  high_priority: 50
+  low_priority: 50
+  ocr: 25
+  blank_candidates: 25
+  family_inferences: 25
+  near_duplicates: 25
+  # Fixed seed so a QC sample is reproducible and auditable.
+  random_seed: 20260731
+
+pilot:
+  # Target size of the Phase 2 pilot sample.
+  target_size: 200
+  # Relative weights of the strata the pilot must cover.  The sampler
+  # fills each stratum as far as the collection allows and reports any
+  # stratum it could not fill.
+  strata:
+    low_bates: 20
+    high_bates: 20
+    small_files: 20
+    large_files: 20
+    single_page: 20
+    multi_page: 25
+    suspected_searchable: 20
+    suspected_image_only: 20
+    suspected_blank: 15
+    exact_duplicates: 15
+    malformed_names: 15
+
+logging:
+  level: "INFO"
+  # Terminal output NEVER contains document text.  This is enforced in
+  # code, not just by configuration.
+  console_level: "INFO"
+  logs_dirname: "logs"
+  # Rotate the log file at this size.
+  max_bytes: 52428800
+  backup_count: 10
