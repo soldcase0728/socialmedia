@@ -120,8 +120,9 @@ make demo           # zero-key Remotion demo renders
   CI sandboxes whose TLS-inspecting egress rejects Chromium's handshake).
   The two families are now bundled as OFL-licensed latin variable fonts,
   inlined into the bundle as `data:` URLs (webpack `asset/inline`, see
-  `remotion-composer/remotion.config.ts`) and registered with
-  `@remotion/fonts`, so font loading makes zero network requests. No
+  `remotion-composer/remotion.config.ts`) and registered by a hardened
+  local loader (`src/fonts.ts`) whose `delayRender()` handle can never
+  time a render out, so font loading makes zero network requests. No
   visual change.
 - On headless hosts without a Remotion-managed browser, pass
   `--browser-executable <path-to-chromium>` to `npx remotion render`
