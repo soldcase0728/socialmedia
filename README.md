@@ -4,6 +4,11 @@ A unified HTTP API for retrieving creator profiles and posts from major social
 platforms (Twitter/X, Instagram, TikTok, YouTube), plus a follow-creator
 endpoint per platform.
 
+Also in this repo: [`video_pipeline/`](./video_pipeline/README.md) — an
+automated short-video editor that watches a OneDrive-synced folder, cuts
+silence, crops clips to vertical 9:16, overlays caption/watermark text, and
+writes the results to another synced folder.
+
 ## Layout
 
 ```

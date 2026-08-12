@@ -1,0 +1,4 @@
+auto-editor>=29
+watchdog>=4
+imageio-ffmpeg>=0.5
+pillow>=10.1
