@@ -17,3 +17,7 @@ build/
 .DS_Store
 .idea/
 .vscode/
+
+# Operational state for the content engine. Real school data (student names,
+# unpublished drafts, metrics) must not land in git.
+data/*.json

@@ -1,0 +1,4 @@
+# Optional. The content engine runs on the standard library alone; install
+# this only to let `brandops/llm.py` call the Claude API directly instead of
+# rendering paste-ready prompts.
+anthropic>=0.40

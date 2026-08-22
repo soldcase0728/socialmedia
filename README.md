@@ -1,4 +1,42 @@
-# social-media-scraping-apis
+# socialmedia
+
+Two projects live here.
+
+## 1. `brandops/` — St. Mary's content & enrollment marketing operating system
+
+A closed loop that turns ordinary days at Orchard Lake St. Mary's into evidence,
+evidence into stories, and results back into better stories:
+
+```
+CAPTURE -> TRIAGE -> CREATE -> APPROVE -> PUBLISH -> MEASURE -> LEARN -> CAPTURE
+```
+
+Pure standard library, no API key required. Start with
+**[docs/00-start-here.md](docs/00-start-here.md)**.
+
+```bash
+python -m brandops today          # the morning brief: today's stories, hooks, copy, capture list
+python -m brandops capture        # today's shot list for staff
+python -m brandops triage         # rank the content inbox
+python -m brandops queue list     # the approval queue
+python -m brandops weekly --learn # weekly intelligence report, folded into brand memory
+python -m brandops stack          # software cost per staff hour saved
+```
+
+| | |
+| --- | --- |
+| Documentation | [`docs/`](docs/) — brand, audiences, capture, triage, production, approval, measurement, architecture |
+| Templates | [`templates/`](templates/) — intake form, capture card, approval card, paid brief, weekly report |
+| Tests | `pytest tests/` |
+
+Optional Claude assistance (`brandops/llm.py`) is off by default; every generator
+also renders a paste-ready prompt so the step can be run in a chat subscription
+the school already pays for. See [docs/08-automation-architecture.md](docs/08-automation-architecture.md)
+for the Microsoft 365 build and the cost discipline behind it.
+
+---
+
+## 2. `social-media-scraping-apis` — creator profile & post API
 
 A unified HTTP API for retrieving creator profiles and posts from major social
 platforms (Twitter/X, Instagram, TikTok, YouTube), plus a follow-creator
