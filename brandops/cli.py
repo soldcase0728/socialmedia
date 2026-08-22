@@ -16,11 +16,12 @@ import argparse
 import json
 import sys
 from datetime import date
+from pathlib import Path
 from typing import Any, Sequence
 
-from . import config, store
-from .approval import ApprovalQueue, Decision, build_card
-from .assets import Asset, from_intake, unresolved
+from . import config
+from .approval import Decision, build_card
+from .assets import from_intake, unresolved
 from .audiences import Audience
 from .brand import Pillar, scan_copy
 from .calendar import default_calendar, ninety_day_campaigns, thirty_day_plan, week_plan
@@ -33,43 +34,20 @@ from .memory import BrandMemory, learn_from_week
 from .mix import analyze
 from .packages import build_package
 from .platforms import Platform
+from .scheduled import output_dir, run_daily, run_safely, run_weekly
 from .scoring import rubric
+from .state import (
+    append_published,
+    append_result,
+    load_assets,
+    load_published,
+    load_queue,
+    load_results,
+    save_assets,
+    save_queue,
+)
 from .stack import summary as stack_summary, table as stack_table
 from .triage import triage, triage_batch
-
-ASSETS_KEY = "assets"
-RESULTS_KEY = "results"
-PUBLISHED_KEY = "published"
-QUEUE_KEY = "queue"
-
-
-# ---------------------------------------------------------------------------
-# storage helpers
-# ---------------------------------------------------------------------------
-
-def load_assets() -> list[Asset]:
-    return [Asset.from_dict(a) for a in store.load(ASSETS_KEY, {}).get("assets", [])]
-
-
-def save_assets(assets: Sequence[Asset]) -> None:
-    store.save(ASSETS_KEY, {"assets": [a.to_dict() for a in assets]})
-
-
-def load_results() -> list[PostResult]:
-    return [PostResult.from_dict(r) for r in store.load(RESULTS_KEY, {}).get("results", [])]
-
-
-def load_published() -> list[dict[str, Any]]:
-    return list(store.load(PUBLISHED_KEY, {}).get("records", []))
-
-
-def load_queue() -> ApprovalQueue:
-    return ApprovalQueue.from_dict(store.load(QUEUE_KEY, {}))
-
-
-def save_queue(queue: ApprovalQueue) -> None:
-    store.save(QUEUE_KEY, queue.to_dict())
-
 
 def parse_date(value: str | None) -> date:
     return date.fromisoformat(value) if value else date.today()
@@ -333,19 +311,14 @@ def cmd_record(args: argparse.Namespace) -> int:
         event=args.event or "",
         paid=args.paid,
     )
-    payload = store.load(RESULTS_KEY, {})
-    payload.setdefault("results", []).append(result.to_dict())
-    store.save(RESULTS_KEY, payload)
-
-    published = store.load(PUBLISHED_KEY, {})
-    published.setdefault("records", []).append({
+    append_result(result)
+    append_published({
         "post_id": result.post_id,
         "pillar": result.pillar.value,
         "audience": result.audience.value,
         "platform": result.platform,
         "event": result.event,
     })
-    store.save(PUBLISHED_KEY, published)
     print(f"recorded {result.post_id}")
     return 0
 
@@ -448,6 +421,27 @@ def cmd_onepager(args: argparse.Namespace) -> int:
     inbox = config.CONTENT_INBOX.get("upload_url") or "<<set CONTENT_INBOX['upload_url'] in brandops/config.py>>"
     print(f"\nUpload link behind the QR code: {inbox}")
     return 0
+
+
+
+def cmd_run_daily(args: argparse.Namespace) -> int:
+    """The unattended morning job. Intended for cron / Task Scheduler."""
+    directory = Path(args.out) if args.out else output_dir()
+    result = run_safely(run_daily, parse_date(args.date), directory=directory)
+    print(result.summary())
+    return 0 if result.ok else 1
+
+
+def cmd_run_weekly(args: argparse.Namespace) -> int:
+    """The unattended Friday job."""
+    directory = Path(args.out) if args.out else output_dir()
+
+    def job(when, directory=None):
+        return run_weekly(when, directory=directory, learn=not args.no_learn)
+
+    result = run_safely(job, parse_date(args.date), directory=directory)
+    print(result.summary())
+    return 0 if result.ok else 1
 
 
 # ---------------------------------------------------------------------------
@@ -561,6 +555,20 @@ def build_parser() -> argparse.ArgumentParser:
 
     one = sub.add_parser("onepager", help="the staff capture one-pager")
     one.set_defaults(func=cmd_onepager)
+
+    run_d = sub.add_parser("run-daily",
+                           help="unattended morning job: write the brief and capture list")
+    run_d.add_argument("--date")
+    run_d.add_argument("--out", help="output folder (default: BRANDOPS_OUT, else briefs/)")
+    run_d.set_defaults(func=cmd_run_daily)
+
+    run_w = sub.add_parser("run-weekly",
+                           help="unattended Friday job: write the intelligence report")
+    run_w.add_argument("--date")
+    run_w.add_argument("--out")
+    run_w.add_argument("--no-learn", action="store_true",
+                       help="do not fold results into brand memory")
+    run_w.set_defaults(func=cmd_run_weekly)
 
     return parser
 

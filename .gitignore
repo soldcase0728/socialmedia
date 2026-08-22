@@ -21,3 +21,7 @@ build/
 # Operational state for the content engine. Real school data (student names,
 # unpublished drafts, metrics) must not land in git.
 data/*.json
+
+# Generated briefs and the scheduled-job log.
+briefs/
+briefs.log

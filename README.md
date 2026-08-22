@@ -21,12 +21,14 @@ python -m brandops triage         # rank the content inbox
 python -m brandops queue list     # the approval queue
 python -m brandops weekly --learn # weekly intelligence report, folded into brand memory
 python -m brandops stack          # software cost per staff hour saved
+python -m brandops run-daily      # unattended morning job (cron / Task Scheduler)
 ```
 
 | | |
 | --- | --- |
 | Documentation | [`docs/`](docs/) — brand, audiences, capture, triage, production, approval, measurement, architecture |
 | Templates | [`templates/`](templates/) — intake form, capture card, approval card, paid brief, weekly report |
+| Scheduling | [`docs/09-scheduling.md`](docs/09-scheduling.md), `scripts/daily-brief.sh` / `.ps1` |
 | Tests | `pytest tests/` |
 
 Optional Claude assistance (`brandops/llm.py`) is off by default; every generator
