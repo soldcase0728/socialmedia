@@ -97,11 +97,15 @@ body{
 
 /* 1 — EYEBROW PILL ---------------------------------------------------------- */
 .eyebrow{
+  --eyebrow-track:.17em;
   display:inline-block;
   font-family:var(--font-sans);
   font-size:.7rem;
   text-transform:uppercase;
-  letter-spacing:.17em;
+  /* Carries the triad, so the same rule applies as anywhere "St. Mary's"
+     appears: the tracking must not widen the word spaces. See .keep below. */
+  letter-spacing:var(--eyebrow-track);
+  word-spacing:calc(-1 * var(--eyebrow-track));
   color:var(--cream-soft);
   border:1px solid var(--rule);
   border-radius:999px;
@@ -128,24 +132,6 @@ body{
    prevented. Without this the H1 splits "St." from "Mary's" at 360-430px. */
 .keep{ white-space:nowrap; }
 
-/* 3 — TRIAD. Part of the title stack, not a footer motto.
-       One line. Slightly letterspaced. All three phrases same weight. ------ */
-.hero__triad{
-  --triad-track:.085em;
-  font-family:var(--font-display);
-  font-weight:400;
-  font-size:clamp(1.05rem,1.75vw,1.5rem);
-  line-height:1.2;
-  /* The open tracking on this line is intentional. The negative word-spacing
-     cancels what that tracking would otherwise add to each space, so every
-     gap stays exactly one normal word space and "St. Mary's" still reads as
-     a name rather than S T . M A R Y ' S. The two values move together. */
-  letter-spacing:var(--triad-track);
-  word-spacing:calc(-1 * var(--triad-track));
-  color:var(--cream-soft);
-  white-space:nowrap;
-  margin:clamp(.7rem,1.5vh,1rem) 0 0;
-}
 
 /* 4 — LOCATION. Quiet. Under the triad, never above the H1. --------------- */
 .hero__location{
@@ -296,21 +282,62 @@ body{
 }
 
 /* --------------------------------------------------------------------------
+   STAT BAND — below the hero, below the fold. Proof, not persuasion.
+   The numeral must never rival the H1: the bar stays the loudest type on the
+   page. Every figure here is governed by CLAIMS.md — nothing ships without an
+   owner, a source, a date and a verified status.
+   -------------------------------------------------------------------------- */
+.band{
+  background:var(--maroon-bar);
+  border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+  padding:clamp(2rem,4vh,3rem) 0;
+}
+.band__grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,max-content));
+  gap:clamp(1.75rem,4vw,4rem);
+}
+.stat__num{
+  font-family:var(--font-display);
+  font-weight:400;
+  /* Capped well under the H1 on purpose. Do not raise this. */
+  font-size:clamp(2.2rem,3.2vw,3rem);
+  line-height:1;
+  letter-spacing:-.02em;
+  color:var(--cream);
+  display:block;
+}
+.stat__label{
+  --stat-track:.09em;
+  font-family:var(--font-sans);
+  font-size:.78rem;
+  text-transform:uppercase;
+  letter-spacing:var(--stat-track);
+  word-spacing:calc(-1 * var(--stat-track));
+  line-height:1.5;
+  color:var(--cream-quiet);
+  margin:.6rem 0 0;
+  max-width:22em;
+}
+
+/* --------------------------------------------------------------------------
    ABOVE-THE-FOLD CUTS (desktop only, in the mandated order).
    Mobile scrolls, so nothing is cut there.
    -------------------------------------------------------------------------- */
 /* Thresholds are measured, not guessed: each is the height at which that
-   configuration stops clearing the fold by 16px at 1440 wide. Keep them in
+   configuration stops clearing the fold by 16px at 1440 wide, measured on the
+   hero copy itself. Keep them in
    this order — location is the FIRST line restored as the screen grows,
    then the quiet line, then the optional one. */
-@media (min-width:900px) and (max-height:744px){
-  .hero__deck .is-optional{ display:none; }          /* cut 1 — fits >=745 */
-}
 @media (min-width:900px) and (max-height:704px){
-  .hero__quiet{ display:none; }                       /* cut 2 — fits >=705 */
+  .hero__deck .is-optional{ display:none; }          /* cut 1 — fits >=705 */
 }
-@media (min-width:900px) and (max-height:674px){
-  .hero__location{ display:none; }                    /* cut 3 — fits >=675 */
+@media (min-width:900px) and (max-height:664px){
+  .hero__quiet{ display:none; }                       /* cut 2 — fits >=665 */
+}
+@media (min-width:900px) and (max-height:629px){
+  .hero__location{ display:none; }                    /* cut 3 — fits >=630 */
 }
 
 /* --------------------------------------------------------------------------
@@ -318,11 +345,9 @@ body{
    -------------------------------------------------------------------------- */
 @media (max-width:899px){
   .hero__grid{ grid-template-columns:1fr; gap:2.5rem; }
-  .hero__triad{ font-size:1.02rem; --triad-track:.07em; }
   .utility__link{ margin-left:0; }
 }
 @media (max-width:420px){
-  .hero__triad{ font-size:.94rem; --triad-track:.05em; }
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -355,19 +380,17 @@ body{
 
     <div class="hero__stack">
 
-      <!-- 1 — eyebrow pill -->
-      <p class="eyebrow">Two divisions. One standard.</p>
+      <!-- 1 — eyebrow pill. Carries the purpose line. This phrase runs
+           ONCE on the page — never also as a display line under the H1. -->
+      <p class="eyebrow">God. Family. <span class="keep">St. Mary’s</span>.</p>
 
       <!-- 2 — H1 -->
       <h1 class="hero__title">The <span class="keep">St. Mary’s</span> Standard.</h1>
 
-      <!-- 3 — triad. Title stack, one line, same weight across all three. -->
-      <p class="hero__triad">God. Family. St. Mary’s.</p>
-
-      <!-- 4 — location, quiet -->
+      <!-- 3 — location, quiet -->
       <p class="hero__location">Catholic college preparatory · Orchard Lake, Michigan</p>
 
-      <!-- 5 — deck, three short lines -->
+      <!-- 4 — deck, three short lines -->
       <div class="hero__deck">
         <p>We treat every student as our own.</p>
         <p class="is-emphasized">Not anonymous. Not excused.</p>
@@ -375,22 +398,22 @@ body{
         <p class="is-optional">That is what makes this place safe. It is also what makes it hard.</p>
       </div>
 
-      <!-- 6 — two bullets. Two only. -->
+      <!-- 5 — two bullets. Two only. -->
       <ul class="hero__proof">
         <li>98% of the Class of 2025 placed at four-year universities</li>
         <li>All-school Mass is part of the week. Theology is required all four years.</li>
       </ul>
 
-      <!-- 7 — quiet line -->
-      <p class="hero__quiet">Co-divisional classes. Classroom and church before the scoreboard.</p>
+      <!-- 6 — quiet line -->
+      <p class="hero__quiet">Classroom and church before the scoreboard.</p>
 
-      <!-- 8 — CTAs -->
+      <!-- 7 — CTAs -->
       <div class="hero__ctas">
         <a class="btn btn--primary" href="#shadow-day">Book a Shadow Day</a>
         <a class="btn btn--secondary" href="#the-standard">Read the Standard</a>
       </div>
 
-      <!-- 9 — Mass-day micro -->
+      <!-- 8 — Mass-day micro -->
       <p class="hero__micro">Visit on a Mass day if you want to see the school as it actually runs.</p>
 
     </div>
@@ -437,8 +460,35 @@ body{
   </div>
 </section>
 
+<!-- ===== STAT BAND — proof. Below the fold, never in the hero. ========= -->
+<section class="band">
+  <div class="wrap band__grid">
+
+    <!-- The structural claim. Lives here, not in the eyebrow, and not also
+         under the bullets — "Co-divisional classes." was cut from the quiet
+         line so this runs once. -->
+    <div class="stat">
+      <span class="stat__num">2</span>
+      <p class="stat__label">Divisions. One standard.</p>
+    </div>
+
+    <!-- RETENTION — deliberately not shipped. Gate, per CLAIMS.md:
+         publish only if the figure is clean, current, and 90% or higher.
+         Below 90% it reads as "the Standard drives people out" and belongs in
+         an internal confidence plan instead. Stat band only — never the hero,
+         even if it clears. Uncomment and fill only once CLAIMS.md says
+         VERIFIED.
+    <div class="stat">
+      <span class="stat__num">__%</span>
+      <p class="stat__label">Return the following year.</p>
+    </div>
+    -->
+
+  </div>
+</section>
+
 <!--
-  If photography is added later it goes in a band HERE, under the hero.
+  If photography is added later it goes in a band HERE, under the stat band.
   Never as a background behind the H1.
   <section class="photo-band"> ... </section>
 -->
