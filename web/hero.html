@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The St. Mary’s Standard — Orchard Lake St. Mary’s</title>
+
+<style>
+/* ==========================================================================
+   ORCHARD LAKE ST. MARY’S — HOMEPAGE HERO (FIRST SCREEN ONLY)
+   --------------------------------------------------------------------------
+   The order of the hero stack is LOCKED. Do not reorder, reword, or insert.
+     1 eyebrow pill  2 H1  3 triad  4 location  5 deck
+     6 two bullets   7 quiet line  8 CTAs  9 Mass-day micro
+   Never cut: the triad, the three deck lines, the two bullets.
+   Cut order if space is tight (handled by the height queries at the bottom):
+     1 optional "safe / hard" line -> 2 quiet co-divisional line -> 3 location
+   ========================================================================== */
+
+:root{
+  /* Type — swap --font-display for the live site's display serif, the same
+     family already setting "The St. Mary's Standard." One-line change. */
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+                  "Times New Roman", serif;
+  --font-text: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* Field — maroon field, cream type. Retune to the live brand values. */
+  --maroon:       #56121a;
+  --maroon-deep:  #430d14;
+  --maroon-bar:   #380a10;
+  --cream:        #f4efe3;
+  --cream-soft:   rgba(244,239,227,.78);
+  --cream-quiet:  rgba(244,239,227,.62);
+  --rule:         rgba(244,239,227,.22);
+  --gold:         #c9a24a;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+
+html{ -webkit-text-size-adjust:100%; }
+
+body{
+  margin:0;
+  background:var(--maroon);
+  color:var(--cream);
+  font-family:var(--font-text);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+.wrap{ width:min(1180px,100% - 3rem); margin-inline:auto; }
+
+/* --------------------------------------------------------------------------
+   UTILITY BAR — sits above the hero. Open house + shadow dates, fill first.
+   -------------------------------------------------------------------------- */
+.utility{
+  background:var(--maroon-bar);
+  border-bottom:1px solid var(--rule);
+  font-family:var(--font-sans);
+  font-size:.775rem;
+  letter-spacing:.03em;
+}
+.utility__inner{
+  display:flex; flex-wrap:wrap; align-items:center;
+  gap:.5rem 1.75rem;
+  padding:.6rem 0;
+  color:var(--cream-soft);
+}
+.utility__item{ display:inline-flex; align-items:baseline; gap:.45rem; }
+.utility__label{
+  text-transform:uppercase; letter-spacing:.12em;
+  font-size:.68rem; color:var(--cream-quiet);
+}
+.utility__fill{ color:var(--gold); letter-spacing:.06em; }
+.utility__link{
+  margin-left:auto; color:var(--cream); text-decoration:none;
+  border-bottom:1px solid var(--rule); padding-bottom:1px;
+}
+.utility__link:hover{ border-bottom-color:var(--cream); }
+
+/* --------------------------------------------------------------------------
+   HERO
+   No photo behind the H1. If art is added later it belongs in a band BELOW
+   this hero — never as a background that hides "Standard."
+   -------------------------------------------------------------------------- */
+.hero{
+  background:linear-gradient(180deg,var(--maroon) 0%,var(--maroon-deep) 100%);
+  padding:clamp(2.5rem,5vh,4.25rem) 0 clamp(2.75rem,5vh,4.5rem);
+}
+.hero__grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);
+  gap:clamp(2rem,4vw,4.5rem);
+  align-items:start;
+}
+
+/* 1 — EYEBROW PILL ---------------------------------------------------------- */
+.eyebrow{
+  display:inline-block;
+  font-family:var(--font-sans);
+  font-size:.7rem;
+  text-transform:uppercase;
+  letter-spacing:.17em;
+  color:var(--cream-soft);
+  border:1px solid var(--rule);
+  border-radius:999px;
+  padding:.44rem .95rem;
+  margin:0 0 clamp(1.15rem,2.4vh,1.6rem);
+}
+
+/* 2 — H1. Loudest type on the page. --------------------------------------- */
+.hero__title{
+  font-family:var(--font-display);
+  font-weight:400;
+  font-size:clamp(2.7rem,5.6vw,4.6rem);
+  line-height:1.02;
+  letter-spacing:-.015em;
+  margin:0;
+  text-wrap:balance;
+}
+
+/* 3 — TRIAD. Part of the title stack, not a footer motto.
+       One line. Slightly letterspaced. All three phrases same weight. ------ */
+.hero__triad{
+  font-family:var(--font-display);
+  font-weight:400;
+  font-size:clamp(1.05rem,1.75vw,1.5rem);
+  line-height:1.2;
+  letter-spacing:.085em;
+  color:var(--cream-soft);
+  white-space:nowrap;
+  margin:clamp(.7rem,1.5vh,1rem) 0 0;
+}
+
+/* 4 — LOCATION. Quiet. Under the triad, never above the H1. --------------- */
+.hero__location{
+  font-family:var(--font-sans);
+  font-size:.755rem;
+  text-transform:uppercase;
+  letter-spacing:.13em;
+  color:var(--cream-quiet);
+  margin:clamp(.75rem,1.6vh,1.05rem) 0 0;
+}
+
+/* 5 — DECK. Three short lines, not one dense paragraph. ------------------- */
+.hero__deck{
+  margin:clamp(1.35rem,2.8vh,1.9rem) 0 0;
+  padding-top:clamp(1.35rem,2.8vh,1.9rem);
+  border-top:1px solid var(--rule);
+  font-size:clamp(1.04rem,1.25vw,1.2rem);
+  line-height:1.55;
+  max-width:34em;
+}
+.hero__deck p{ margin:0; }
+.hero__deck p + p{ margin-top:.3rem; }
+/* Weight only — never a different color stunt. */
+.hero__deck .is-emphasized{ font-weight:700; }
+.hero__deck .is-optional{ color:var(--cream-soft); margin-top:.75rem; }
+
+/* 6 — TWO BULLETS. Two only. --------------------------------------------- */
+.hero__proof{
+  list-style:none;
+  margin:clamp(1.35rem,2.8vh,1.85rem) 0 0;
+  padding:0;
+  display:grid;
+  gap:.6rem;
+  max-width:36em;
+}
+.hero__proof li{
+  position:relative;
+  padding-left:1.35rem;
+  font-size:clamp(.95rem,1.05vw,1.03rem);
+  line-height:1.45;
+  color:var(--cream-soft);
+}
+.hero__proof li::before{
+  content:"";
+  position:absolute; left:0; top:.62em;
+  width:.42rem; height:1px;
+  background:var(--gold);
+}
+
+/* 7 — QUIET LINE ---------------------------------------------------------- */
+.hero__quiet{
+  font-family:var(--font-sans);
+  font-size:.83rem;
+  letter-spacing:.02em;
+  line-height:1.5;
+  color:var(--cream-quiet);
+  margin:clamp(.95rem,2vh,1.25rem) 0 0;
+}
+
+/* 8 — CTAS ---------------------------------------------------------------- */
+.hero__ctas{
+  display:flex; flex-wrap:wrap; align-items:center; gap:.75rem 1rem;
+  margin:clamp(1.4rem,2.9vh,1.95rem) 0 0;
+}
+.btn{
+  font-family:var(--font-sans);
+  font-size:.875rem;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+  text-decoration:none;
+  padding:.85rem 1.6rem;
+  display:inline-block;
+  transition:background-color .18s ease,color .18s ease,border-color .18s ease;
+}
+.btn--primary{
+  background:var(--cream); color:var(--maroon-deep);
+  border:1px solid var(--cream); font-weight:700;
+}
+.btn--primary:hover{ background:#fff; border-color:#fff; }
+.btn--secondary{
+  background:transparent; color:var(--cream);
+  border:1px solid var(--rule);
+}
+.btn--secondary:hover{ border-color:var(--cream); }
+.btn:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; }
+
+/* 9 — MASS-DAY MICRO ------------------------------------------------------ */
+.hero__micro{
+  font-family:var(--font-sans);
+  font-size:.8rem;
+  line-height:1.5;
+  color:var(--cream-quiet);
+  margin:clamp(.85rem,1.8vh,1.1rem) 0 0;
+  max-width:36em;
+}
+
+/* --------------------------------------------------------------------------
+   LEAD FORM CARD — right column.
+   >>> REPLACE THE INNER MARKUP WITH THE LIVE SITE'S EXISTING FORM. <<<
+   Fields and the "real member of admissions replies" line are not to change.
+   -------------------------------------------------------------------------- */
+.card{
+  background:rgba(244,239,227,.05);
+  border:1px solid var(--rule);
+  padding:clamp(1.5rem,2.4vw,2rem);
+}
+.card__title{
+  font-family:var(--font-display);
+  font-weight:400; font-size:1.4rem; line-height:1.2;
+  margin:0 0 .4rem;
+}
+.card__sub{
+  font-family:var(--font-sans); font-size:.82rem; line-height:1.5;
+  color:var(--cream-quiet); margin:0 0 1.35rem;
+}
+.field{ margin-bottom:.9rem; }
+.field label{
+  display:block;
+  font-family:var(--font-sans); font-size:.68rem;
+  text-transform:uppercase; letter-spacing:.11em;
+  color:var(--cream-quiet); margin-bottom:.38rem;
+}
+.field input,.field select{
+  width:100%;
+  background:rgba(0,0,0,.18);
+  border:1px solid var(--rule);
+  color:var(--cream);
+  font-family:var(--font-sans); font-size:.92rem;
+  padding:.65rem .7rem;
+  border-radius:0;
+}
+.field input:focus,.field select:focus{
+  outline:none; border-color:var(--cream);
+}
+.field select{ appearance:none; }
+.card__submit{
+  width:100%; margin-top:.35rem; cursor:pointer;
+  font-family:var(--font-sans); font-size:.85rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:.06em;
+  background:var(--cream); color:var(--maroon-deep);
+  border:1px solid var(--cream); padding:.85rem 1rem;
+}
+.card__submit:hover{ background:#fff; }
+.card__assurance{
+  font-family:var(--font-sans); font-size:.76rem; line-height:1.5;
+  color:var(--cream-quiet);
+  margin:.9rem 0 0; text-align:center;
+}
+
+/* --------------------------------------------------------------------------
+   ABOVE-THE-FOLD CUTS (desktop only, in the mandated order).
+   Mobile scrolls, so nothing is cut there.
+   -------------------------------------------------------------------------- */
+@media (min-width:900px) and (max-height:860px){
+  .hero__deck .is-optional{ display:none; }          /* cut 1 */
+}
+@media (min-width:900px) and (max-height:790px){
+  .hero__quiet{ display:none; }                       /* cut 2 */
+}
+@media (min-width:900px) and (max-height:715px){
+  .hero__location{ display:none; }                    /* cut 3 */
+}
+
+/* --------------------------------------------------------------------------
+   NARROW SCREENS — stack, form card below the hero copy.
+   -------------------------------------------------------------------------- */
+@media (max-width:899px){
+  .hero__grid{ grid-template-columns:1fr; gap:2.5rem; }
+  .hero__triad{ font-size:1.02rem; letter-spacing:.07em; }
+  .utility__link{ margin-left:0; }
+}
+@media (max-width:420px){
+  .hero__triad{ font-size:.94rem; letter-spacing:.05em; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{ transition:none !important; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===== UTILITY BAR — open house + shadow dates, fill first ============ -->
+<div class="utility">
+  <div class="wrap utility__inner">
+    <span class="utility__item">
+      <span class="utility__label">Open House</span>
+      <span>Sunday, October 19 · 1:00 p.m.</span>
+    </span>
+    <span class="utility__item">
+      <span class="utility__label">Shadow Days</span>
+      <span>October 7 · October 21 · November 4</span>
+      <span class="utility__fill">Fill first</span>
+    </span>
+    <a class="utility__link" href="#visit">Reserve a date</a>
+  </div>
+</div>
+
+<!-- ===== HERO — LOCKED STACK. Nothing jumps ahead of this order. ======== -->
+<section class="hero">
+  <div class="wrap hero__grid">
+
+    <div class="hero__stack">
+
+      <!-- 1 — eyebrow pill -->
+      <p class="eyebrow">Two divisions. One standard.</p>
+
+      <!-- 2 — H1 -->
+      <h1 class="hero__title">The St.&nbsp;Mary’s Standard.</h1>
+
+      <!-- 3 — triad. Title stack, one line, same weight across all three. -->
+      <p class="hero__triad">God. Family. St.&nbsp;Mary’s.</p>
+
+      <!-- 4 — location, quiet -->
+      <p class="hero__location">Catholic college preparatory · Orchard Lake, Michigan</p>
+
+      <!-- 5 — deck, three short lines -->
+      <div class="hero__deck">
+        <p>We treat every student as our own.</p>
+        <p class="is-emphasized">Not anonymous. Not excused.</p>
+        <p>Faith first. Then the work. Then character.</p>
+        <p class="is-optional">That is what makes this place safe. It is also what makes it hard.</p>
+      </div>
+
+      <!-- 6 — two bullets. Two only. -->
+      <ul class="hero__proof">
+        <li>98% of the Class of 2025 placed at four-year universities</li>
+        <li>All-school Mass is part of the week. Theology is required all four years.</li>
+      </ul>
+
+      <!-- 7 — quiet line -->
+      <p class="hero__quiet">Co-divisional classes. Classroom and church before the scoreboard.</p>
+
+      <!-- 8 — CTAs -->
+      <div class="hero__ctas">
+        <a class="btn btn--primary" href="#shadow-day">Book a Shadow Day</a>
+        <a class="btn btn--secondary" href="#the-standard">Read the Standard</a>
+      </div>
+
+      <!-- 9 — Mass-day micro -->
+      <p class="hero__micro">Visit on a Mass day if you want to see the school as it actually runs.</p>
+
+    </div>
+
+    <!-- ===================================================================
+         LEAD FORM CARD — right column.
+         PLACEHOLDER. Swap this whole <aside> for the live site's existing
+         form markup. Do not change its fields or its assurance line.
+         =================================================================== -->
+    <aside class="card" id="visit">
+      <h2 class="card__title">Start a conversation.</h2>
+      <p class="card__sub">Tell us who you are and we will take it from there.</p>
+
+      <form action="#" method="post">
+        <div class="field">
+          <label for="student">Student name</label>
+          <input id="student" name="student" type="text" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="grade">Entering grade</label>
+          <select id="grade" name="grade">
+            <option>9</option><option>10</option><option>11</option><option>12</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="parent">Parent or guardian</label>
+          <input id="parent" name="parent" type="text" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel">
+        </div>
+        <button class="card__submit" type="submit">Request information</button>
+      </form>
+
+      <!-- Assurance line — reproduce the live string verbatim. -->
+      <p class="card__assurance">A real member of admissions replies.</p>
+    </aside>
+
+  </div>
+</section>
+
+<!--
+  If photography is added later it goes in a band HERE, under the hero.
+  Never as a background behind the H1.
+  <section class="photo-band"> ... </section>
+-->
+
+</body>
+</html>
