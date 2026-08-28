@@ -115,19 +115,33 @@ body{
   font-weight:400;
   font-size:clamp(2.7rem,5.6vw,4.6rem);
   line-height:1.02;
-  letter-spacing:-.015em;
+  /* Display type sits tight and even — never letterspaced like the triad.
+     If "St." reads stranded from "Mary's", tighten here; do not add space. */
+  letter-spacing:-.025em;
   margin:0;
   text-wrap:balance;
 }
 
+/* Keeps "St. Mary's" on one line while the space between them stays an
+   ordinary word space. The space in the markup is a plain U+0020 — nothing
+   is bound together and nothing is stretched apart; only the line break is
+   prevented. Without this the H1 splits "St." from "Mary's" at 360-430px. */
+.keep{ white-space:nowrap; }
+
 /* 3 — TRIAD. Part of the title stack, not a footer motto.
        One line. Slightly letterspaced. All three phrases same weight. ------ */
 .hero__triad{
+  --triad-track:.085em;
   font-family:var(--font-display);
   font-weight:400;
   font-size:clamp(1.05rem,1.75vw,1.5rem);
   line-height:1.2;
-  letter-spacing:.085em;
+  /* The open tracking on this line is intentional. The negative word-spacing
+     cancels what that tracking would otherwise add to each space, so every
+     gap stays exactly one normal word space and "St. Mary's" still reads as
+     a name rather than S T . M A R Y ' S. The two values move together. */
+  letter-spacing:var(--triad-track);
+  word-spacing:calc(-1 * var(--triad-track));
   color:var(--cream-soft);
   white-space:nowrap;
   margin:clamp(.7rem,1.5vh,1rem) 0 0;
@@ -304,11 +318,11 @@ body{
    -------------------------------------------------------------------------- */
 @media (max-width:899px){
   .hero__grid{ grid-template-columns:1fr; gap:2.5rem; }
-  .hero__triad{ font-size:1.02rem; letter-spacing:.07em; }
+  .hero__triad{ font-size:1.02rem; --triad-track:.07em; }
   .utility__link{ margin-left:0; }
 }
 @media (max-width:420px){
-  .hero__triad{ font-size:.94rem; letter-spacing:.05em; }
+  .hero__triad{ font-size:.94rem; --triad-track:.05em; }
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -345,10 +359,10 @@ body{
       <p class="eyebrow">Two divisions. One standard.</p>
 
       <!-- 2 — H1 -->
-      <h1 class="hero__title">The St.&nbsp;Mary’s Standard.</h1>
+      <h1 class="hero__title">The <span class="keep">St. Mary’s</span> Standard.</h1>
 
       <!-- 3 — triad. Title stack, one line, same weight across all three. -->
-      <p class="hero__triad">God. Family. St.&nbsp;Mary’s.</p>
+      <p class="hero__triad">God. Family. St. Mary’s.</p>
 
       <!-- 4 — location, quiet -->
       <p class="hero__location">Catholic college preparatory · Orchard Lake, Michigan</p>

@@ -48,6 +48,26 @@ Nothing is cut below 900px wide — mobile scrolls.
 The maroon and cream tokens (`--maroon`, `--cream`, …) are close but should be
 retuned to the live brand values.
 
+## Typographic rule: “St. Mary’s”
+
+Period + one space + Mary’s, everywhere it appears. The space is a plain
+U+0020 — there are no `&nbsp;` characters in the file.
+
+- **H1** sits tight and even at `-.025em`, never letterspaced like the triad.
+  If “St.” ever reads stranded from “Mary’s”, tighten the tracking; do not add
+  space. `The St. Mary’s / Standard.` is the correct break.
+- **`.keep`** (`white-space:nowrap`) holds “St. Mary’s” on one line without
+  touching the gap. It is needed: with an unprotected space the H1 splits
+  “St.” from “Mary’s” at 360–430px. Nothing is bound together and nothing is
+  stretched apart — only the line break is prevented.
+- **Triad** keeps its open tracking, but `word-spacing` is set to the negative
+  of `--triad-track` so the tracking cannot widen the spaces. Every gap stays
+  one normal word space and the name reads as a name. Change the tracking via
+  `--triad-track` only — the two values must move together.
+
+Verified 320–1600px: “St.” never separates from “Mary’s”, and the
+`St.`→`Mary’s` gap matches the `The`→`St.` gap to within 0.01px.
+
 ## Constraints held
 
 - No photo behind the H1. If art is added later it belongs in a band **below**
