@@ -285,14 +285,18 @@ body{
    ABOVE-THE-FOLD CUTS (desktop only, in the mandated order).
    Mobile scrolls, so nothing is cut there.
    -------------------------------------------------------------------------- */
-@media (min-width:900px) and (max-height:860px){
-  .hero__deck .is-optional{ display:none; }          /* cut 1 */
+/* Thresholds are measured, not guessed: each is the height at which that
+   configuration stops clearing the fold by 16px at 1440 wide. Keep them in
+   this order — location is the FIRST line restored as the screen grows,
+   then the quiet line, then the optional one. */
+@media (min-width:900px) and (max-height:744px){
+  .hero__deck .is-optional{ display:none; }          /* cut 1 — fits >=745 */
 }
-@media (min-width:900px) and (max-height:790px){
-  .hero__quiet{ display:none; }                       /* cut 2 */
+@media (min-width:900px) and (max-height:704px){
+  .hero__quiet{ display:none; }                       /* cut 2 — fits >=705 */
 }
-@media (min-width:900px) and (max-height:715px){
-  .hero__location{ display:none; }                    /* cut 3 */
+@media (min-width:900px) and (max-height:674px){
+  .hero__location{ display:none; }                    /* cut 3 — fits >=675 */
 }
 
 /* --------------------------------------------------------------------------
@@ -384,7 +388,7 @@ body{
          =================================================================== -->
     <aside class="card" id="visit">
       <h2 class="card__title">Start a conversation.</h2>
-      <p class="card__sub">Tell us who you are and we will take it from there.</p>
+      <p class="card__sub">Tell us about your student. We will not send a blast.</p>
 
       <form action="#" method="post">
         <div class="field">
@@ -409,7 +413,7 @@ body{
           <label for="phone">Phone</label>
           <input id="phone" name="phone" type="tel" autocomplete="tel">
         </div>
-        <button class="card__submit" type="submit">Request information</button>
+        <button class="card__submit" type="submit">Start the conversation</button>
       </form>
 
       <!-- Assurance line — reproduce the live string verbatim. -->

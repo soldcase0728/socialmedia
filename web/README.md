@@ -26,9 +26,14 @@ the stylesheet, so it degrades in the mandated order without hand-editing:
 
 | Desktop viewport height | What drops |
 | ----------------------- | ---------- |
-| ≤ 860px | optional “safe / hard” deck line |
-| ≤ 790px | + quiet co-divisional line |
-| ≤ 715px | + location line |
+| ≤ 744px | optional “safe / hard” deck line |
+| ≤ 704px | + quiet co-divisional line |
+| ≤ 674px | + location line |
+
+These are measured, not guessed — each is the height at which that
+configuration stops clearing the fold by 16px at 1440 wide. Read upward, the
+location line is the first thing restored as the screen grows, then the quiet
+line, then the optional one. The full stack survives down to 745px.
 
 Nothing is cut below 900px wide — mobile scrolls.
 
