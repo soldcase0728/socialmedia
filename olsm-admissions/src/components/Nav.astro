@@ -1,0 +1,53 @@
+---
+import { nav, links, site } from '../config/site';
+
+const { pathname } = Astro.url;
+const isCurrent = (href: string) => pathname === href || pathname === `${href}/`;
+---
+<header class="border-b border-hairline bg-ground">
+  <nav class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6" aria-label="Primary">
+    <a href="/" class="flex flex-col leading-none">
+      <span class="font-display text-lg font-semibold sm:text-xl">{site.shortName}</span>
+      <span class="label mt-1 text-[0.625rem] text-muted">Admissions</span>
+    </a>
+
+    <ul class="hidden items-center gap-6 lg:flex">
+      {nav.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            aria-current={isCurrent(item.href) ? 'page' : undefined}
+            class="text-sm font-semibold hover:text-red aria-[current=page]:text-red"
+          >{item.label}</a>
+        </li>
+      ))}
+      <li>
+        <a href={links.apply} class="btn btn-primary !min-h-0 !px-4 !py-2 text-sm" rel="noopener">Apply</a>
+      </li>
+    </ul>
+
+    <details class="lg:hidden [&_svg.close]:hidden [&[open]_svg.open]:hidden [&[open]_svg.close]:block">
+      <summary
+        class="flex h-12 w-12 cursor-pointer list-none items-center justify-center border border-ink/20"
+        aria-label="Open menu"
+      >
+        <svg class="open" width="20" height="14" viewBox="0 0 20 14" aria-hidden="true">
+          <path d="M0 1h20M0 7h20M0 13h20" stroke="currentColor" stroke-width="2" />
+        </svg>
+        <svg class="close" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M1 1l14 14M15 1L1 15" stroke="currentColor" stroke-width="2" />
+        </svg>
+      </summary>
+      <ul class="absolute left-0 right-0 z-40 border-b border-hairline bg-ground px-4 pb-6 pt-2 shadow-lg">
+        {nav.map((item) => (
+          <li class="border-t border-hairline">
+            <a href={item.href} class="block py-4 font-semibold">{item.label}</a>
+          </li>
+        ))}
+        <li class="pt-4">
+          <a href={links.apply} class="btn btn-primary w-full" rel="noopener">Apply</a>
+        </li>
+      </ul>
+    </details>
+  </nav>
+</header>

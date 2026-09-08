@@ -1,0 +1,158 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------
+   OLSM design tokens. Ground is warm off-white; panels are near
+   black; red is the only fill accent; gold is rules only, never fill.
+   --------------------------------------------------------------- */
+@theme {
+  --color-ground: #fbf8f3;
+  --color-ink: #1e1a1a;
+  --color-red: #b3202a;
+  --color-red-deep: #8f1a22;
+  --color-panel: #161314;
+  --color-gold: #b08a45;
+  --color-muted: #5b5350;
+  --color-hairline: #e2d9cc;
+
+  --font-display: 'Fraunces', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-sans: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* 8px spacing grid */
+  --spacing: 0.5rem;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background-color: var(--color-ground);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+
+  p { text-wrap: pretty; }
+
+  :focus-visible {
+    outline: 2px solid var(--color-red);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--color-red);
+    color: #fff;
+  }
+}
+
+@utility measure {
+  max-width: 68ch;
+}
+
+/* Uppercase tracked label, used for eyebrows and small caps sign-offs. */
+@utility label {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Numerals always set in the sans face, never the display serif. */
+@utility stat-numeral {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+@utility rule-gold {
+  border-top: 1px solid var(--color-gold);
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.2;
+    text-align: center;
+    border-radius: 2px;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .btn-primary {
+    background-color: var(--color-red);
+    color: #fff;
+    border: 1px solid var(--color-red);
+  }
+  .btn-primary:hover { background-color: var(--color-red-deep); border-color: var(--color-red-deep); }
+
+  .btn-secondary {
+    background-color: transparent;
+    color: currentColor;
+    border: 1px solid currentColor;
+  }
+  .btn-secondary:hover { background-color: color-mix(in srgb, currentColor 10%, transparent); }
+
+  .field-label {
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    font-size: 0.6875rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-muted);
+  }
+
+  .field {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.625rem 0.75rem;
+    background: #fff;
+    border: 1px solid var(--color-hairline);
+    border-radius: 2px;
+    font: inherit;
+    color: var(--color-ink);
+  }
+  .field:focus { border-color: var(--color-red); }
+
+  .prose-olsm :where(p, ul, ol) { max-width: 68ch; margin-bottom: 1rem; }
+  .prose-olsm :where(h2) { font-size: 1.75rem; margin-top: 2.5rem; margin-bottom: 0.75rem; }
+  .prose-olsm :where(h3) { font-size: 1.25rem; margin-top: 2rem; margin-bottom: 0.5rem; }
+  .prose-olsm :where(ul) { list-style: disc; padding-left: 1.25rem; }
+  .prose-olsm :where(ol) { list-style: decimal; padding-left: 1.25rem; }
+  .prose-olsm :where(a) { color: var(--color-red); text-decoration: underline; text-underline-offset: 2px; }
+}

@@ -1,0 +1,10 @@
+---
+import { nextEvent } from '../config/site';
+---
+<a
+  href={nextEvent.href}
+  class="block bg-red text-white text-center px-4 py-2 text-sm font-semibold hover:bg-red-deep transition-colors"
+>
+  <span class="tabular">{nextEvent.barText}</span>
+  <span aria-hidden="true" class="ml-1">&rarr;</span>
+</a>

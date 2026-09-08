@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../config/site';
+import { eventSchema } from '../lib/schema';
+---
+<BaseLayout
+  title={`${site.shortName} Admissions | Catholic co-divisional high school, Orchard Lake, Michigan`}
+  description={site.description}
+  schema={[eventSchema()]}
+  showAnnouncement={true}
+>
+  <section class="bg-panel text-white">
+    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+      <h1 class="font-display text-5xl">God. Family. St. Mary’s.</h1>
+      <p class="measure mt-6 text-white/75">Homepage sections land in milestone 2.</p>
+    </div>
+  </section>
+</BaseLayout>

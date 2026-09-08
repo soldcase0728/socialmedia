@@ -1,0 +1,80 @@
+---
+import '../styles/global.css';
+import AnnouncementBar from '../components/AnnouncementBar.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
+import { site } from '../config/site';
+import { graph, schoolSchema, websiteSchema, webPageSchema } from '../lib/schema';
+
+interface Props {
+  /** Unique per page. Rendered verbatim in <title>. */
+  title: string;
+  /** One citeable sentence. */
+  description: string;
+  /** Extra JSON-LD nodes (Event, FAQPage, Person...). */
+  schema?: object[];
+  /** Suppress the announcement bar on pages that already lead with the event. */
+  showAnnouncement?: boolean;
+  ogImage?: string;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  schema = [],
+  showAnnouncement = true,
+  ogImage = '/og-default.jpg',
+  noindex = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', site.url).href;
+const jsonLd = graph([
+  schoolSchema(),
+  websiteSchema(),
+  webPageSchema({ url: canonical, name: title, description }),
+  ...schema,
+]);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex,follow" />}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Source+Sans+3:wght@400;600;700&display=swap"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={`${site.shortName} Admissions`} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(ogImage, site.url).href} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+    <Analytics />
+  </head>
+  <body class="flex min-h-screen flex-col">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-red focus:px-4 focus:py-2 focus:text-white">Skip to content</a>
+    {showAnnouncement && <AnnouncementBar />}
+    <Nav />
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

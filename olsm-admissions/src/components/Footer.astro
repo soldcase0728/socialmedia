@@ -1,0 +1,48 @@
+---
+import { site, contact, links, footerLinks } from '../config/site';
+const year = new Date().getFullYear();
+---
+<footer class="mt-24 bg-panel text-white">
+  <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+    <div class="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+      <div>
+        <p class="font-display text-2xl">{site.name}</p>
+        <address class="mt-4 not-italic text-white/75">
+          {contact.streetAddress}<br />
+          {contact.addressLocality}, {contact.addressRegion} {contact.postalCode}
+        </address>
+        <p class="mt-4">
+          <a href={`tel:${contact.phone}`} class="tabular font-semibold hover:text-gold">{contact.phoneDisplay}</a>
+        </p>
+        <p class="mt-1">
+          <a href={`mailto:${contact.email}`} class="hover:text-gold">{contact.email}</a>
+        </p>
+
+        <div class="mt-8 rule-gold pt-4">
+          <p class="label text-gold">Mass times</p>
+          <p class="mt-2 text-white/75">
+            <!-- TODO: confirm — daily and Sunday Mass schedule in the chapel. -->
+            TODO: confirm — daily Mass and Sunday Mass times.
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <p class="label text-gold">Admissions</p>
+        <ul class="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+          {footerLinks.map((l) => (
+            <li><a href={l.href} class="text-white/75 hover:text-white">{l.label}</a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 flex flex-col gap-4 border-t border-white/15 pt-6 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
+      <p>&copy; {year} {site.name}. Founded {site.foundingDate}. A school of {site.parentOrganization}.</p>
+      <ul class="flex flex-wrap gap-6">
+        <li><a href={links.mainSite} class="hover:text-white" rel="noopener">stmarysprep.com</a></li>
+        <li><a href={links.privacyPolicy} class="hover:text-white">Privacy policy</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>

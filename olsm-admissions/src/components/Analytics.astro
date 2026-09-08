@@ -1,0 +1,44 @@
+---
+/**
+ * GA4 + Meta Pixel + Vercel Analytics. Every tag renders only when its
+ * env var is set, so previews stay out of production reporting.
+ */
+const ga4Id = import.meta.env.PUBLIC_GA4_ID;
+const pixelId = import.meta.env.PUBLIC_META_PIXEL_ID;
+---
+
+{ga4Id && (
+  <>
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`}></script>
+    <script is:inline define:vars={{ ga4Id }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ window.dataLayer.push(arguments); }
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', ga4Id);
+    </script>
+  </>
+)}
+
+{pixelId && (
+  <>
+    <script is:inline define:vars={{ pixelId }}>
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+      document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', pixelId);
+      fbq('track', 'PageView');
+    </script>
+    <noscript>
+      <img height="1" width="1" style="display:none" alt=""
+        src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`} />
+    </noscript>
+  </>
+)}
+
+<script>
+  import { inject } from '@vercel/analytics';
+  inject();
+</script>
