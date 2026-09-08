@@ -14,8 +14,9 @@
   --color-muted: #5b5350;
   --color-hairline: #e2d9cc;
 
-  --font-display: 'Fraunces', ui-serif, Georgia, 'Times New Roman', serif;
-  --font-sans: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Both stacks are injected by Astro's font pipeline (see astro.config.mjs). */
+  --font-display: var(--font-fraunces, ui-serif, Georgia, serif);
+  --font-sans: var(--font-source-sans, ui-sans-serif, system-ui, sans-serif);
 
   /* 8px spacing grid */
   --spacing: 0.5rem;

@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { Font } from 'astro:assets';
 import AnnouncementBar from '../components/AnnouncementBar.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
@@ -47,12 +48,9 @@ const jsonLd = graph([
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex,follow" />}
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Source+Sans+3:wght@400;600;700&display=swap"
-    />
+    <!-- Self-hosted, same-origin, preloaded. No third-party font request. -->
+    <Font cssVariable="--font-source-sans" preload />
+    <Font cssVariable="--font-fraunces" preload />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={`${site.shortName} Admissions`} />
