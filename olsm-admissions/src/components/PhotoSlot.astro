@@ -1,0 +1,29 @@
+---
+/**
+ * A reserved image slot. Renders the real photo when `src` is set; otherwise a
+ * labelled placeholder that holds the exact aspect ratio, so dropping the photo
+ * in later shifts nothing.
+ */
+interface Props {
+  label: string;
+  ratio?: string;
+  src?: string;
+  alt?: string;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+}
+const { label, ratio = '4 / 5', src, alt = '', class: className = '', loading = 'lazy' } = Astro.props;
+---
+{src ? (
+  <img src={src} alt={alt} loading={loading} decoding="async"
+    style={`aspect-ratio:${ratio}`} class={`w-full object-cover ${className}`} />
+) : (
+  <div
+    style={`aspect-ratio:${ratio}`}
+    class={`flex w-full items-center justify-center bg-[repeating-linear-gradient(135deg,#2a2426_0,#2a2426_12px,#232022_12px,#232022_24px)] ${className}`}
+    role="img"
+    aria-label={`Photo placeholder: ${label}`}
+  >
+    <span class="label px-4 text-center text-white/45">{label}</span>
+  </div>
+)}

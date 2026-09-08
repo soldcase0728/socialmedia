@@ -1,0 +1,12 @@
+---
+interface Props { id: string; }
+const { id } = Astro.props;
+---
+<div id={id} hidden tabindex="-1" class="rule-gold bg-white p-6 focus:outline-none sm:p-8">
+  <p class="label text-red">Received</p>
+  <p class="font-display mt-3 text-2xl">Got it. A person will reply within one school hour.</p>
+  <p class="measure mt-3 text-muted">
+    <slot>School hours are 7:45 a.m. to 3:30 p.m., Monday through Friday. Anything sent after that gets answered the next morning.</slot>
+    <!-- TODO: confirm — office hours. -->
+  </p>
+</div>

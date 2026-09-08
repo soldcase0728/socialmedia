@@ -22,7 +22,7 @@ const isCurrent = (href: string) => pathname === href || pathname === `${href}/`
         </li>
       ))}
       <li>
-        <a href={links.apply} class="btn btn-primary !min-h-0 !px-4 !py-2 text-sm" rel="noopener">Apply</a>
+        <a href={links.apply} class="btn btn-secondary !min-h-0 border-red px-4 py-2 text-sm text-red" rel="noopener">Apply</a>
       </li>
     </ul>
 
@@ -45,7 +45,7 @@ const isCurrent = (href: string) => pathname === href || pathname === `${href}/`
           </li>
         ))}
         <li class="pt-4">
-          <a href={links.apply} class="btn btn-primary w-full" rel="noopener">Apply</a>
+          <a href={links.apply} class="btn btn-secondary w-full border-red text-red" rel="noopener">Apply</a>
         </li>
       </ul>
     </details>

@@ -1,18 +1,209 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { site } from '../config/site';
-import { eventSchema } from '../lib/schema';
+import PhotoSlot from '../components/PhotoSlot.astro';
+import InquiryForm from '../components/forms/InquiryForm.astro';
+import { site, links, nextEvent, record, contact } from '../config/site';
+import { eventSchema, faqSchema, type Faq } from '../lib/schema';
+
+const canonical = `${site.url}/`;
+
+const faqs: Faq[] = [
+  {
+    question: "Is Orchard Lake St. Mary's co-ed?",
+    answer:
+      "It is co-divisional. Boys and girls attend the same school on the same campus with the same faculty and the same diploma requirements, and take most academic classes in separate divisions.",
+  },
+  {
+    question: 'Does St. Mary’s have boarding?',
+    answer:
+      "Yes. Students live on the Orchard Lake campus in the residence hall, including students from outside Michigan and outside the United States.",
+  },
+  {
+    question: 'How do I apply?',
+    answer:
+      'Applications are submitted through the school’s Blackbaud portal. Families usually visit first at an open house or a shadow day, then apply.',
+  },
+];
+
+/** THE STANDARD proof columns. One concrete sentence each. */
+const standard = [
+  {
+    eyebrow: 'Known',
+    // TODO: confirm — student-teacher ratio and advisory structure.
+    proof: 'TODO: confirm — average class size and the name of the advisory structure that assigns every student one adult.',
+  },
+  {
+    eyebrow: 'Stretched',
+    // TODO: confirm — AP/dual-enrollment counts and the senior thesis length.
+    proof: 'Every senior writes a 20-page thesis and defends it. TODO: confirm — number of AP and dual-enrollment courses offered.',
+  },
+  {
+    eyebrow: 'Formed',
+    proof: 'Four years of theology, and Mass in the chapel at 6:30 a.m. for anyone who wants it. TODO: confirm — service hours required to graduate.',
+  },
+  {
+    eyebrow: 'Rooted',
+    // TODO: confirm — Polish heritage / Orchard Lake Schools framing approved by the school.
+    proof: 'TODO: confirm — one sentence on the Polish founding, the Orchard Lake Schools campus, and what that means for a student today.',
+  },
+];
 ---
 <BaseLayout
-  title={`${site.shortName} Admissions | Catholic co-divisional high school, Orchard Lake, Michigan`}
+  title={`${site.shortName} Admissions | Catholic co-divisional high school in Orchard Lake, Michigan`}
   description={site.description}
-  schema={[eventSchema()]}
-  showAnnouncement={true}
+  schema={[eventSchema(), faqSchema(canonical, faqs)]}
 >
-  <section class="bg-panel text-white">
-    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-      <h1 class="font-display text-5xl">God. Family. St. Mary’s.</h1>
-      <p class="measure mt-6 text-white/75">Homepage sections land in milestone 2.</p>
+  <!-- 2. HERO -->
+  <section class="relative overflow-hidden bg-panel text-white">
+    <div class="lg:grid lg:grid-cols-2">
+      <div class="px-4 pb-24 pt-12 sm:px-6 lg:w-full lg:max-w-[40rem] lg:justify-self-end lg:py-28 lg:pr-14">
+        <p class="label text-white/60">Orchard Lake St. Mary&rsquo;s Admissions</p>
+        <p class="label mt-6 text-gold">In that order. Since 1885.</p>
+        <h1 class="font-display mt-3 text-[3rem] leading-[0.98] sm:text-6xl lg:text-7xl">
+          <span class="block">God.</span>
+          <span class="block">Family.</span>
+          <span class="block">St. Mary&rsquo;s.</span>
+        </h1>
+        <p class="measure mt-8 text-lg text-white/80">
+          Four years of theology. A 20-page senior thesis. A roommate, if you choose boarding.
+          Mass at 6:30 a.m. for anyone who wants it. That is what formation looks like here.
+        </p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <a class="btn btn-primary" href={nextEvent.href}>{nextEvent.ctaText}</a>
+          <a class="btn btn-secondary" href="/shadow-days">Book a shadow day</a>
+        </div>
+        <p class="measure mt-6 text-sm text-white/60">
+          Shadow days fill first. Visit on a Mass day if you want to see the school as it actually runs.
+        </p>
+      </div>
+
+      <!-- Full-bleed to the right viewport edge on desktop; stacked below on mobile. -->
+      <div class="w-full lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
+        <PhotoSlot
+          label="Hero photo — students on campus, vertical crop"
+          ratio="4 / 3"
+          loading="eager"
+          class="lg:h-full lg:aspect-auto"
+        />
+      </div>
     </div>
   </section>
+
+  <!-- 3. THE RECORD, overlapping the hero's bottom edge -->
+  <section aria-labelledby="record-heading" class="relative z-10 bg-ground">
+    <div class="mx-auto -mt-12 max-w-7xl px-4 sm:px-6">
+      <div class="grid gap-px bg-hairline sm:grid-cols-2 lg:grid-cols-5">
+        <div class="bg-red p-6 text-white lg:col-span-1">
+          <p class="label text-white/75">The Record &middot; Class of {record.classYear}</p>
+          <p class="font-display mt-2 text-2xl leading-tight">Built for what&rsquo;s next.</p>
+        </div>
+        {record.stats.map((stat) => (
+          <div class="bg-white p-6">
+            <p class="stat-numeral text-4xl sm:text-5xl">{stat.value}</p>
+            <p class="mt-2 text-sm text-muted">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+      <p class="mt-3 text-xs text-muted">
+        <!-- TODO: confirm — source line and as-of date for the Class of 2026 figures. -->
+        TODO: confirm — source and as-of date for these figures.
+      </p>
+    </div>
+  </section>
+
+  <!-- 4. THE STANDARD -->
+  <section aria-labelledby="standard-heading" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:py-28">
+    <p class="label text-red">The Standard</p>
+    <h2 id="standard-heading" class="font-display mt-4 text-3xl leading-[1.1] sm:text-4xl lg:text-5xl">
+      <span class="block">Every student known.</span>
+      <span class="block">Every student stretched.</span>
+      <span class="block">Every student formed.</span>
+      <span class="block">Nobody gets to disappear.</span>
+    </h2>
+
+    <div class="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {standard.map((col) => (
+        <div class="rule-gold pt-4">
+          <p class="label text-red">{col.eyebrow}</p>
+          <p class="mt-3 text-muted">{col.proof}</p>
+        </div>
+      ))}
+    </div>
+
+    <p class="label mt-14 text-ink/70">God. Family. St. Mary&rsquo;s.</p>
+  </section>
+
+  <!-- 5. VISIT -->
+  <section aria-labelledby="visit-heading" class="bg-panel text-white">
+    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:py-24">
+      <p class="label text-gold">Visit</p>
+      <h2 id="visit-heading" class="font-display mt-4 text-3xl sm:text-4xl">
+        Two ways to see the school before you apply.
+      </h2>
+
+      <div class="mt-12 grid gap-px bg-white/15 lg:grid-cols-2">
+        <div class="bg-panel p-6 sm:p-8">
+          <p class="label text-gold">Open house</p>
+          <p class="font-display mt-3 text-2xl">{nextEvent.name}</p>
+          <p class="tabular mt-2 text-xl text-white/85">{nextEvent.dateLong}</p>
+          <p class="measure mt-4 text-white/70">
+            Tour the campus, meet department chairs, and ask about tuition, aid and boarding in the
+            same visit. <!-- TODO: confirm — start time, length and what families should expect. -->
+            TODO: confirm — start time and run of show.
+          </p>
+          <a class="btn btn-secondary mt-6" href={nextEvent.href}>{nextEvent.ctaText}</a>
+        </div>
+
+        <div class="bg-panel p-6 sm:p-8">
+          <p class="label text-gold">Shadow day</p>
+          <p class="font-display mt-3 text-2xl">A full school day, with a student host.</p>
+          <p class="measure mt-4 text-white/70">
+            Eighth graders and transfer students attend classes, eat lunch and go where their host
+            goes. Shadow days fill first.
+          </p>
+          <div class="mt-6 border border-white/20 p-4">
+            <p class="label text-white/60">Scheduling</p>
+            <p class="mt-2 text-sm text-white/70">
+              <!-- Calendly embed slot. URL comes from links.shadowDayCalendly in src/config/site.ts. -->
+              Calendly embed slot &mdash; loads on
+              <a class="underline decoration-gold underline-offset-4" href="/shadow-days">the shadow day page</a>.
+            </p>
+            <a class="btn btn-secondary mt-4 w-full" href="/shadow-days">Book a shadow day</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. INQUIRY -->
+  <section id="inquiry" aria-labelledby="inquiry-heading" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:py-28">
+    <div class="grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+      <div>
+        <p class="label text-red">Ask us anything</p>
+        <h2 id="inquiry-heading" class="font-display mt-4 text-3xl sm:text-4xl">
+          Tell us who you are. We will answer in a sentence, not a brochure.
+        </h2>
+        <p class="measure mt-4 text-muted">
+          Applications go through Blackbaud when you are ready. This form is for the questions that
+          come first: tuition, aid, bus routes, boarding, whether your daughter can keep playing club
+          volleyball.
+        </p>
+        <p class="mt-6 text-muted">
+          Prefer the phone?
+          <a class="tabular font-semibold text-red" href={`tel:${contact.phone}`}>{contact.phoneDisplay}</a>
+        </p>
+        <p class="mt-6">
+          <a class="btn btn-secondary" href={links.apply} rel="noopener">Start an application in Blackbaud</a>
+        </p>
+      </div>
+
+      <div class="border border-hairline bg-white/60 p-6 sm:p-8">
+        <InquiryForm headingId="inquiry-heading" />
+      </div>
+    </div>
+  </section>
+
+  <script>
+    import '../scripts/forms.ts';
+  </script>
 </BaseLayout>

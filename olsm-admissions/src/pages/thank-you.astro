@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { contact, site } from '../config/site';
+
+export const prerender = false;
+
+const retry = Astro.url.searchParams.get('state') === 'retry';
+---
+<BaseLayout
+  title={`Thank you | ${site.shortName} Admissions`}
+  description="Confirmation that your inquiry or open house RSVP reached the Orchard Lake St. Mary's admissions office."
+  noindex={true}
+  showAnnouncement={false}
+>
+  <section class="mx-auto max-w-3xl px-4 py-24 sm:px-6">
+    {retry ? (
+      <>
+        <p class="label text-red">Not delivered</p>
+        <h1 class="font-display mt-3 text-4xl">That did not send.</h1>
+        <p class="measure mt-4 text-muted">
+          Call the admissions office at
+          <a class="font-semibold text-red tabular" href={`tel:${contact.phone}`}>{contact.phoneDisplay}</a>
+          or email <a class="font-semibold text-red" href={`mailto:${contact.email}`}>{contact.email}</a>
+          and we will take it directly.
+        </p>
+      </>
+    ) : (
+      <>
+        <p class="label text-red">Received</p>
+        <h1 class="font-display mt-3 text-4xl">Got it. A person will reply within one school hour.</h1>
+        <p class="measure mt-4 text-muted">
+          If you would rather talk now, call <a class="font-semibold text-red tabular" href={`tel:${contact.phone}`}>{contact.phoneDisplay}</a>.
+        </p>
+      </>
+    )}
+    <p class="mt-8"><a class="btn btn-secondary" href="/">Back to admissions</a></p>
+  </section>
+</BaseLayout>

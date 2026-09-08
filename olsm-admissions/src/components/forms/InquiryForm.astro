@@ -1,0 +1,108 @@
+---
+import { referralSources, gradeOptions } from '../../config/site';
+import FormSuccess from './FormSuccess.astro';
+
+interface Props { headingId?: string; }
+const { headingId = 'inquiry-heading' } = Astro.props;
+---
+<FormSuccess id="inquiry-success" />
+
+<form
+  id="inquiry-form"
+  action="/api/inquiry"
+  method="post"
+  data-lead-form
+  data-event="generate_lead"
+  data-success="inquiry-success"
+  aria-describedby={headingId}
+  class="grid gap-6 sm:grid-cols-2"
+>
+  <!-- Honeypot. Real families never see it; bots fill it. -->
+  <div class="hidden" aria-hidden="true">
+    <label for="inquiry-company">Company</label>
+    <input id="inquiry-company" type="text" name="company" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div>
+    <label class="field-label" for="parentFirstName">Parent first name</label>
+    <input class="field" id="parentFirstName" name="parentFirstName" type="text" autocomplete="given-name" required />
+    <p class="mt-1 text-sm text-red" data-error-for="parentFirstName"></p>
+  </div>
+
+  <div>
+    <label class="field-label" for="parentLastName">Parent last name</label>
+    <input class="field" id="parentLastName" name="parentLastName" type="text" autocomplete="family-name" required />
+    <p class="mt-1 text-sm text-red" data-error-for="parentLastName"></p>
+  </div>
+
+  <div>
+    <label class="field-label" for="studentFirstName">Student first name</label>
+    <input class="field" id="studentFirstName" name="studentFirstName" type="text" required />
+    <p class="mt-1 text-sm text-red" data-error-for="studentFirstName"></p>
+  </div>
+
+  <div>
+    <label class="field-label" for="grade">Grade entering</label>
+    <select class="field" id="grade" name="grade" required>
+      <option value="">Choose a grade</option>
+      {gradeOptions.map((g) => <option value={g}>{g}th grade</option>)}
+    </select>
+    <p class="mt-1 text-sm text-red" data-error-for="grade"></p>
+  </div>
+
+  <fieldset class="sm:col-span-2" data-contact-toggle>
+    <legend class="field-label">How should we reach you?</legend>
+    <div class="flex flex-wrap gap-4">
+      <label class="flex items-center gap-2 text-base">
+        <input type="radio" name="contactMethod" value="email" checked class="h-5 w-5 accent-[#B3202A]" />
+        Email
+      </label>
+      <label class="flex items-center gap-2 text-base">
+        <input type="radio" name="contactMethod" value="phone" class="h-5 w-5 accent-[#B3202A]" />
+        Phone
+      </label>
+    </div>
+
+    <div class="mt-4 grid gap-6 sm:grid-cols-2">
+      <div data-when="email">
+        <label class="field-label" for="email">Email</label>
+        <input class="field" id="email" name="email" type="email" autocomplete="email" />
+        <p class="mt-1 text-sm text-red" data-error-for="email"></p>
+      </div>
+      <div data-when="phone">
+        <label class="field-label" for="phone">Phone</label>
+        <input class="field tabular" id="phone" name="phone" type="tel" autocomplete="tel" />
+        <p class="mt-1 text-sm text-red" data-error-for="phone"></p>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="sm:col-span-2">
+    <label class="field-label" for="referralSource">How did you hear about us?</label>
+    <select class="field" id="referralSource" name="referralSource">
+      <option value="">Choose one</option>
+      {referralSources.map((s) => <option value={s}>{s}</option>)}
+    </select>
+  </div>
+
+  <div class="sm:col-span-2">
+    <label class="field-label" for="message">Anything you want us to know?</label>
+    <textarea class="field" id="message" name="message" rows="4"
+      placeholder="A sport, an instrument, a question about boarding, a sibling already here."></textarea>
+  </div>
+
+  <div class="sm:col-span-2">
+    <button type="submit" class="btn btn-primary w-full sm:w-auto">Send my inquiry</button>
+    <p class="mt-3 text-sm text-muted" role="status" data-form-status></p>
+    <p class="mt-2 text-sm text-muted">We reply from a person's address, not a no-reply box.</p>
+  </div>
+</form>
+
+<style>
+  /* Show only the chosen contact field. Without :has support both stay
+     visible, which is still a working form. No JS required either way. */
+  fieldset[data-contact-toggle]:has(input[value='email']:checked) [data-when='phone'],
+  fieldset[data-contact-toggle]:has(input[value='phone']:checked) [data-when='email'] {
+    display: none;
+  }
+</style>

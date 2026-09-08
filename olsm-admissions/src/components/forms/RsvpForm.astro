@@ -1,0 +1,63 @@
+---
+import { referralSources, gradeOptions, nextEvent } from '../../config/site';
+import FormSuccess from './FormSuccess.astro';
+---
+<FormSuccess id="rsvp-success">
+  Your seat for {nextEvent.dateLong} is saved. Watch for a confirmation email with parking and check-in.
+</FormSuccess>
+
+<form
+  id="rsvp-form"
+  action="/api/rsvp"
+  method="post"
+  data-lead-form
+  data-event="rsvp"
+  data-success="rsvp-success"
+  class="grid gap-6 sm:grid-cols-2"
+>
+  <div class="hidden" aria-hidden="true">
+    <label for="rsvp-company">Company</label>
+    <input id="rsvp-company" type="text" name="company" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="sm:col-span-2">
+    <label class="field-label" for="rsvp-name">Your name</label>
+    <input class="field" id="rsvp-name" name="name" type="text" autocomplete="name" required />
+    <p class="mt-1 text-sm text-red" data-error-for="name"></p>
+  </div>
+
+  <div>
+    <label class="field-label" for="rsvp-email">Email</label>
+    <input class="field" id="rsvp-email" name="email" type="email" autocomplete="email" required />
+    <p class="mt-1 text-sm text-red" data-error-for="email"></p>
+  </div>
+
+  <div>
+    <label class="field-label" for="rsvp-attending">How many attending</label>
+    <input class="field tabular" id="rsvp-attending" name="attending" type="number" inputmode="numeric"
+      min="1" max="20" value="2" required />
+    <p class="mt-1 text-sm text-red" data-error-for="attending"></p>
+  </div>
+
+  <div>
+    <label class="field-label" for="rsvp-grade">Student grade entering</label>
+    <select class="field" id="rsvp-grade" name="grade" required>
+      <option value="">Choose a grade</option>
+      {gradeOptions.map((g) => <option value={g}>{g}th grade</option>)}
+    </select>
+    <p class="mt-1 text-sm text-red" data-error-for="grade"></p>
+  </div>
+
+  <div>
+    <label class="field-label" for="rsvp-referral">How did you hear about us?</label>
+    <select class="field" id="rsvp-referral" name="referralSource">
+      <option value="">Choose one</option>
+      {referralSources.map((s) => <option value={s}>{s}</option>)}
+    </select>
+  </div>
+
+  <div class="sm:col-span-2">
+    <button type="submit" class="btn btn-primary w-full sm:w-auto">Save my seat</button>
+    <p class="mt-3 text-sm text-muted" role="status" data-form-status></p>
+  </div>
+</form>
