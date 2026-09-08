@@ -38,6 +38,23 @@ framework, build command and security headers.
 | `RESEND_API_KEY` | Server | Sends inquiry and RSVP notification email. |
 | `SHEET_WEBHOOK_URL` | Server | Google Apps Script webhook that appends a row per submission. |
 
+## Measured quality
+
+Mobile Lighthouse against the production build (`npm run build`, served over
+HTTP at 390px, Moto G class throttling):
+
+| Page | Performance | Accessibility | Best practices | SEO |
+| --- | --- | --- | --- | --- |
+| `/` | 100 | 100 | 100 | 100 |
+| `/shadow-days` | 99 | 100 | 100 | 100 |
+
+To re-run against a deployed URL:
+
+```bash
+npx lighthouse https://<preview-url>/ --form-factor=mobile --preset=desktop=false \
+  --only-categories=performance,accessibility,best-practices,seo --view
+```
+
 ## Editing the facts
 
 Everything that changes between admission cycles lives in
@@ -47,6 +64,16 @@ social profiles. Change it there once; no page markup hard-codes a date or a URL
 
 Anything not yet confirmed by the school is marked `TODO: confirm` in the source.
 Milestone 5 prints the full checklist grouped by page.
+
+## Facts still to confirm
+
+`CONTENT-CHECKLIST.md` is generated from the source and lists every unconfirmed
+fact, grouped by the page it appears on. Regenerate it after any content change:
+
+```bash
+npm run todos              # grouped checklist in the terminal
+npm run todos -- --md > CONTENT-CHECKLIST.md
+```
 
 ## UTM convention
 
