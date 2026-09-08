@@ -1,0 +1,52 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import FactsRail from '../components/FactsRail.astro';
+import FaqList from '../components/FaqList.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site } from '../config/site';
+import { faqSchema, breadcrumbSchema, type Faq } from '../lib/schema';
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+  h1: string;
+  standfirst: string;
+  facts?: { label: string; value: string }[];
+  faqs?: Faq[];
+  cta?: 'visit' | 'inquiry' | 'apply' | 'none';
+  schema?: object[];
+  noindex?: boolean;
+}
+
+const {
+  title, description, eyebrow, h1, standfirst,
+  facts = [], faqs = [], cta = 'visit', schema = [], noindex = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, ''), site.url).href;
+const extra: object[] = [
+  breadcrumbSchema(canonical, [
+    { name: 'Admissions', item: `${site.url}/` },
+    { name: h1, item: canonical },
+  ]),
+  ...(faqs.length ? [faqSchema(canonical, faqs)] : []),
+  ...schema,
+];
+---
+<BaseLayout title={title} description={description} schema={extra} noindex={noindex}>
+  <PageHeader eyebrow={eyebrow} h1={h1} standfirst={standfirst} />
+
+  <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+    {facts.length > 0 && <FactsRail facts={facts} />}
+
+    <div class="prose-olsm mt-12">
+      <slot />
+    </div>
+
+    <FaqList faqs={faqs} />
+  </div>
+
+  <CtaBand variant={cta} />
+</BaseLayout>

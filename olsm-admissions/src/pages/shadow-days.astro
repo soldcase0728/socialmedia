@@ -1,0 +1,92 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { links, site, contact } from '../config/site';
+import type { Faq } from '../lib/schema';
+
+const faqs: Faq[] = [
+  {
+    question: 'Who can shadow?',
+    answer:
+      'Eighth graders and students considering a transfer into tenth or eleventh grade. TODO: confirm — whether seventh graders are hosted.',
+  },
+  {
+    question: 'What does my student bring?',
+    answer:
+      'TODO: confirm — dress expectations, whether lunch is provided, and what to bring.',
+  },
+  {
+    question: 'How long is a shadow day?',
+    answer:
+      'A full school day. TODO: confirm — drop-off and pickup times.',
+  },
+  {
+    question: 'Can a parent come along?',
+    answer:
+      'The student shadows alone with a host. Parents are welcome to meet with admissions during the day. TODO: confirm — whether a parent meeting is scheduled automatically.',
+  },
+  {
+    question: 'Can we shadow on a Mass day?',
+    answer:
+      'Yes, and it is the better visit. Ask for a Mass day when you book and you will see how the schedule actually runs.',
+  },
+];
+---
+<PageLayout
+  title={`Shadow days | ${site.shortName} Admissions`}
+  description="Shadow days at Orchard Lake St. Mary's Preparatory put a prospective student in real classes with a student host for a full school day, booked online and offered most weeks during the school year."
+  eyebrow="Shadow days"
+  h1="Spend a real school day here."
+  standfirst="A shadow day is a full day of real classes with a student host who has similar interests. Shadow days fill first, so book before you decide anything else."
+  facts={[
+    { label: 'Who', value: '8th graders and transfers' },
+    { label: 'Length', value: 'Full school day' },
+    { label: 'Cost', value: 'Free' },
+    { label: 'Booked', value: 'Online, below' },
+  ]}
+  faqs={faqs}
+  cta="inquiry"
+>
+  <h2>How to book</h2>
+  <p>
+    Pick a date below. You will be asked for the student's name, current school and
+    one interest &mdash; a sport, an instrument, a subject &mdash; so we can match a
+    host who does the same thing.
+  </p>
+
+  <div id="shadow-booking" class="not-prose my-10 border border-hairline bg-white p-4 sm:p-6">
+    <p class="label text-red">Pick a date</p>
+    <!-- Calendly inline widget. URL comes from links.shadowDayCalendly in src/config/site.ts. -->
+    <div
+      class="calendly-inline-widget mt-4 min-h-[680px]"
+      data-url={`${links.shadowDayCalendly}?hide_gdpr_banner=1&primary_color=b3202a`}
+      style="min-width:280px"
+    ></div>
+    <noscript>
+      <p class="mt-4">
+        <a class="btn btn-primary" href={links.shadowDayCalendly} rel="noopener">Open the booking calendar</a>
+      </p>
+    </noscript>
+    <p class="mt-4 text-sm text-muted">
+      Calendar not loading? Book at
+      <a class="font-semibold text-red" href={links.shadowDayCalendly} rel="noopener">{links.shadowDayCalendly.replace('https://', '')}</a>
+      or call <a class="tabular font-semibold text-red" href={`tel:${contact.phone}`}>{contact.phoneDisplay}</a>.
+    </p>
+  </div>
+
+  <h2>What the day looks like</h2>
+  <p>
+    <!-- TODO: confirm — every time in this list. -->
+    TODO: confirm — arrival time, where families check in, how the host is
+    introduced, lunch, and pickup.
+  </p>
+
+  <h2>What we ask of you</h2>
+  <ul>
+    <li>Tell us one interest so the host match is not random.</li>
+    <li>Send the student in <!-- TODO: confirm --> TODO: confirm &mdash; dress expectations.</li>
+    <li>Cancel by <!-- TODO: confirm --> TODO: confirm &mdash; cancellation notice, so a host is not left waiting.</li>
+  </ul>
+
+  <script is:inline async src="https://assets.calendly.com/assets/external/widget.js"></script>
+  <link rel="stylesheet" href="https://assets.calendly.com/assets/external/widget.css" />
+</PageLayout>

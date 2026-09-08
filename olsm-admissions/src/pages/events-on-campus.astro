@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import FactsRail from '../components/FactsRail.astro';
+import FaqList from '../components/FaqList.astro';
+import RsvpForm from '../components/forms/RsvpForm.astro';
+import { site, nextEvent, contact } from '../config/site';
+import { eventSchema, breadcrumbSchema, faqSchema, type Faq } from '../lib/schema';
+
+const canonical = `${site.url}/events-on-campus`;
+
+const faqs: Faq[] = [
+  {
+    question: 'Do we have to RSVP?',
+    answer: 'Yes, so we can plan parking, seating and the number of student guides. It takes under a minute.',
+  },
+  {
+    question: 'How long is the open house?',
+    answer: 'TODO: confirm — start time, end time and whether families may arrive late.',
+  },
+  {
+    question: 'Should we bring our student?',
+    answer: 'Yes. Students meet current students and see the building; parents meet faculty and admissions.',
+  },
+  {
+    question: 'What if we cannot make October 18?',
+    answer: 'Book a shadow day instead. A shadow day shows the school on a normal day, which most families find more useful.',
+  },
+];
+
+/** TODO: confirm — the full on-campus event calendar for the year. */
+const otherEvents = [
+  { name: 'TODO: confirm — winter information night', when: 'TODO: confirm', who: 'Prospective families' },
+  { name: 'TODO: confirm — placement assessment day', when: 'TODO: confirm', who: 'Applicants' },
+  { name: 'TODO: confirm — accepted student night', when: 'TODO: confirm', who: 'Admitted families' },
+];
+---
+<BaseLayout
+  title={`Events on campus | ${site.shortName} Admissions`}
+  description={`Orchard Lake St. Mary's Preparatory hosts a fall open house on ${nextEvent.dateLong} plus information nights, assessment days and accepted-student events for prospective families.`}
+  schema={[
+    eventSchema(),
+    faqSchema(canonical, faqs),
+    breadcrumbSchema(canonical, [
+      { name: 'Admissions', item: `${site.url}/` },
+      { name: 'Events on campus', item: canonical },
+    ]),
+  ]}
+  showAnnouncement={false}
+>
+  <PageHeader
+    eyebrow="Events on campus"
+    h1="Come see it."
+    standfirst={`The next open house is ${nextEvent.dateLong}. RSVP below and we will hold a seat, a parking spot and a student guide for your family.`}
+  />
+
+  <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6">
+    <FactsRail
+      facts={[
+        { label: 'Next event', value: nextEvent.name },
+        { label: 'Date', value: nextEvent.dateLong },
+        { label: 'Time', value: 'TODO: confirm' },
+        { label: 'Cost', value: 'Free' },
+      ]}
+    />
+
+    <div class="mt-14 grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+      <div class="prose-olsm">
+        <h2>{nextEvent.name} &middot; {nextEvent.dateLong}</h2>
+        <p>
+          Tour the campus with a current student, meet department chairs, and get a
+          straight answer on tuition, aid and boarding in the same visit.
+        </p>
+        <p>
+          <!-- TODO: confirm — run of show, parking, where to check in, whether the chapel is open. -->
+          TODO: confirm &mdash; arrival, check-in location, parking, and the run of show.
+        </p>
+        <p>
+          Questions before you come? Call
+          <a class="tabular" href={`tel:${contact.phone}`}>{contact.phoneDisplay}</a>.
+        </p>
+
+        <h2>Other events this year</h2>
+        <ul class="not-prose mt-6 border-t border-hairline">
+          {otherEvents.map((e) => (
+            <li class="flex flex-col gap-1 border-b border-hairline py-4 sm:flex-row sm:items-baseline sm:justify-between">
+              <span class="font-semibold">{e.name}</span>
+              <span class="tabular text-sm text-muted">{e.when} &middot; {e.who}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div id="rsvp" class="border border-hairline bg-white p-6 sm:p-8">
+        <p class="label text-red">RSVP</p>
+        <h2 class="font-display mt-3 text-2xl">Save a seat for {nextEvent.dateLong}</h2>
+        <p class="mt-2 mb-8 text-muted">Under a minute. No account, no portal.</p>
+        <RsvpForm />
+      </div>
+    </div>
+
+    <FaqList faqs={faqs} />
+  </div>
+
+  <script>
+    import '../scripts/forms.ts';
+  </script>
+</BaseLayout>

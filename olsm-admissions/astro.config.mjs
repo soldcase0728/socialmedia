@@ -10,8 +10,13 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://www.olsmadmissions.com',
   output: 'static',
+  trailingSlash: 'never',
   adapter: vercel(),
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    mdx(),
+    // /thank-you is a post-submit confirmation, not a landing page.
+    sitemap({ filter: (page) => !page.includes('/thank-you') }),
+  ],
   vite: { plugins: [tailwindcss()] },
   build: { format: 'directory' },
 });

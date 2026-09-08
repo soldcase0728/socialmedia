@@ -1,0 +1,61 @@
+---
+import { nextEvent, links, contact } from '../config/site';
+
+interface Props { variant?: 'visit' | 'inquiry' | 'apply' | 'none'; }
+const { variant = 'visit' } = Astro.props;
+---
+{variant !== 'none' && (
+  <section aria-labelledby="cta-heading" class="mt-20 bg-panel text-white">
+    <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+      {variant === 'visit' && (
+        <>
+          <p class="label text-gold">Next step</p>
+          <h2 id="cta-heading" class="font-display mt-3 text-3xl sm:text-4xl">
+            See it on a school day.
+          </h2>
+          <p class="measure mt-4 text-white/75">
+            Open house is {nextEvent.dateLong}. Shadow days run most weeks and fill first.
+          </p>
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a class="btn btn-primary" href={nextEvent.href}>{nextEvent.ctaText}</a>
+            <a class="btn btn-secondary" href="/shadow-days">Book a shadow day</a>
+          </div>
+        </>
+      )}
+
+      {variant === 'inquiry' && (
+        <>
+          <p class="label text-gold">Ask us</p>
+          <h2 id="cta-heading" class="font-display mt-3 text-3xl sm:text-4xl">
+            Send one question. Get one answer.
+          </h2>
+          <p class="measure mt-4 text-white/75">
+            Or call the admissions office at
+            <a class="tabular font-semibold text-gold" href={`tel:${contact.phone}`}>{contact.phoneDisplay}</a>.
+          </p>
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a class="btn btn-primary" href="/#inquiry">Ask a question</a>
+            <a class="btn btn-secondary" href={nextEvent.href}>{nextEvent.ctaText}</a>
+          </div>
+        </>
+      )}
+
+      {variant === 'apply' && (
+        <>
+          <p class="label text-gold">When you are ready</p>
+          <h2 id="cta-heading" class="font-display mt-3 text-3xl sm:text-4xl">
+            Applications are submitted in Blackbaud.
+          </h2>
+          <p class="measure mt-4 text-white/75">
+            Most families visit first. The application itself takes about 20 minutes.
+            <!-- TODO: confirm — how long the Blackbaud application takes and what it asks for. -->
+          </p>
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a class="btn btn-primary" href={links.apply} rel="noopener">Start an application</a>
+            <a class="btn btn-secondary" href="/application-process">Read the steps first</a>
+          </div>
+        </>
+      )}
+    </div>
+  </section>
+)}

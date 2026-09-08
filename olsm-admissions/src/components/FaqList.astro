@@ -1,0 +1,20 @@
+---
+interface Props { faqs: { question: string; answer: string }[]; heading?: string; }
+const { faqs, heading = 'Questions families ask' } = Astro.props;
+---
+{faqs.length > 0 && (
+  <section aria-labelledby="faq-heading" class="mt-16">
+    <h2 id="faq-heading" class="font-display text-3xl">{heading}</h2>
+    <div class="mt-8 border-t border-hairline">
+      {faqs.map((f) => (
+        <details class="group border-b border-hairline">
+          <summary class="flex cursor-pointer list-none items-start justify-between gap-4 py-5 font-semibold">
+            <span>{f.question}</span>
+            <span aria-hidden="true" class="text-red transition-transform group-open:rotate-45">&plus;</span>
+          </summary>
+          <p class="measure pb-5 text-muted">{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+)}

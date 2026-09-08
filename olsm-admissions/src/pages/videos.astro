@@ -1,0 +1,45 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import VideoEmbed from '../components/VideoEmbed.astro';
+import { site } from '../config/site';
+import type { Faq } from '../lib/schema';
+
+const faqs: Faq[] = [
+  {
+    question: 'Can we see a class, not just a highlight reel?',
+    answer: 'Book a shadow day. A student spends the whole day in real classes, which no video replaces.',
+  },
+  {
+    question: 'Are transcripts available?',
+    answer: 'Yes. Every video on this page has its transcript printed underneath it.',
+  },
+];
+---
+<PageLayout
+  title={`Videos | ${site.shortName} Admissions`}
+  description="Videos of Orchard Lake St. Mary's Preparatory — campus, the co-divisional academic day, boarding life and the senior thesis — each with a full transcript."
+  eyebrow="Videos"
+  h1="Watch it, or read it."
+  standfirst="Every video here has a transcript underneath. If you would rather read than watch, the words are all on this page."
+  faqs={faqs}
+  cta="visit"
+>
+  <div class="not-prose grid gap-14">
+    <VideoEmbed
+      title="A day at St. Mary's"
+      summary="TODO: confirm — one sentence on what this video shows."
+    />
+    <VideoEmbed
+      title="What co-divisional looks like in a classroom"
+      summary="TODO: confirm — one sentence on what this video shows."
+    />
+    <VideoEmbed
+      title="Living on campus"
+      summary="TODO: confirm — one sentence on what this video shows."
+    />
+    <VideoEmbed
+      title="The senior thesis, explained by seniors"
+      summary="TODO: confirm — one sentence on what this video shows."
+    />
+  </div>
+</PageLayout>

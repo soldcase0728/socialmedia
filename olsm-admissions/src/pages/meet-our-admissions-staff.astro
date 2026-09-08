@@ -1,0 +1,99 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import PhotoSlot from '../components/PhotoSlot.astro';
+import { site, contact } from '../config/site';
+import { personSchema, type Faq } from '../lib/schema';
+
+/**
+ * TODO: confirm — every name, title, email and extension below. Do not publish a
+ * staff name that the school has not supplied.
+ */
+const staff = [
+  {
+    name: 'TODO: confirm — Director of Admissions',
+    jobTitle: 'Director of Admissions',
+    covers: 'Overall admissions, financial aid questions, transfer families',
+    email: '',
+    telephone: '',
+    photo: 'Headshot — Director of Admissions',
+  },
+  {
+    name: 'TODO: confirm — Associate Director of Admissions',
+    jobTitle: 'Associate Director of Admissions',
+    covers: 'Shadow days, open houses, eighth grade visits',
+    email: '',
+    telephone: '',
+    photo: 'Headshot — Associate Director of Admissions',
+  },
+  {
+    name: 'TODO: confirm — Director of Boarding Admissions',
+    jobTitle: 'Director of Boarding Admissions',
+    covers: 'Residential and international families, I-20 and visa questions',
+    email: '',
+    telephone: '',
+    photo: 'Headshot — Director of Boarding Admissions',
+  },
+  {
+    name: 'TODO: confirm — Admissions Coordinator',
+    jobTitle: 'Admissions Coordinator',
+    covers: 'Applications, transcripts, assessment scheduling',
+    email: '',
+    telephone: '',
+    photo: 'Headshot — Admissions Coordinator',
+  },
+];
+
+const faqs: Faq[] = [
+  {
+    question: 'Who should we call first?',
+    answer:
+      'Call the main admissions line and say the grade the student is entering. You will be routed to the person who handles that grade.',
+  },
+  {
+    question: 'How fast will someone reply?',
+    answer: 'Within one school hour, during school hours, from a person’s address rather than a no-reply box.',
+  },
+  {
+    question: 'Can we meet in person before applying?',
+    answer: 'Yes. Meetings are scheduled around a shadow day or an open house so you only make one trip.',
+  },
+];
+---
+<PageLayout
+  title={`Meet our admissions staff | ${site.shortName}`}
+  description="The Orchard Lake St. Mary's Preparatory admissions team, who each person handles, and how to reach them directly by phone or email."
+  eyebrow="Admissions staff"
+  h1="You will be talking to these people."
+  standfirst={`Four people run admissions. Call ${contact.phoneDisplay} and one of them picks up during school hours.`}
+  faqs={faqs}
+  cta="visit"
+  schema={staff.map((p) => personSchema({ name: p.name, jobTitle: p.jobTitle, email: p.email || undefined, telephone: p.telephone || undefined }))}
+>
+  <div class="not-prose grid gap-px bg-hairline sm:grid-cols-2">
+    {staff.map((p) => (
+      <article class="bg-white p-6">
+        <div class="w-32">
+          <PhotoSlot label={p.photo} ratio="1 / 1" />
+        </div>
+        <h2 class="font-display mt-5 text-xl">{p.name}</h2>
+        <p class="label mt-2 text-red">{p.jobTitle}</p>
+        <p class="mt-3 text-muted">{p.covers}</p>
+        <p class="mt-4 text-sm text-muted">
+          <!-- TODO: confirm — direct email and extension. -->
+          TODO: confirm &mdash; direct email and phone extension.
+        </p>
+      </article>
+    ))}
+  </div>
+
+  <h2>Reaching the office</h2>
+  <p>
+    Phone <a class="tabular" href={`tel:${contact.phone}`}>{contact.phoneDisplay}</a>,
+    email <a href={`mailto:${contact.email}`}>{contact.email}</a>, or use the
+    <a href="/#inquiry">inquiry form</a>. Office hours are
+    <!-- TODO: confirm — office hours. --> TODO: confirm.
+  </p>
+  <p>
+    {site.name}, {contact.streetAddress}, {contact.addressLocality}, {contact.addressRegion} {contact.postalCode}.
+  </p>
+</PageLayout>

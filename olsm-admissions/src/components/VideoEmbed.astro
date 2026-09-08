@@ -1,0 +1,48 @@
+---
+/**
+ * A video with a transcript underneath. The transcript is real HTML, not a
+ * caption track, so the words are indexable and citable with the video absent.
+ */
+interface Props {
+  title: string;
+  /** YouTube ID. Leave empty for an unfilled slot. */
+  youtubeId?: string;
+  length?: string;
+  summary: string;
+}
+const { title, youtubeId, length = 'TODO: confirm', summary } = Astro.props;
+const transcriptId = `transcript-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}`;
+---
+<article class="border-t border-hairline pt-8">
+  <h2 class="font-display text-2xl">{title}</h2>
+  <p class="measure mt-2 text-muted">{summary}</p>
+  <p class="tabular mt-1 text-sm text-muted">Running time: {length}</p>
+
+  <div class="mt-5 aspect-video w-full bg-panel">
+    {youtubeId ? (
+      <iframe
+        class="h-full w-full"
+        src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
+        title={title}
+        loading="lazy"
+        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    ) : (
+      <div class="flex h-full w-full items-center justify-center" role="img" aria-label={`Video placeholder: ${title}`}>
+        <span class="label px-4 text-center text-white/45">Video slot &mdash; TODO: confirm the YouTube ID</span>
+      </div>
+    )}
+  </div>
+
+  <details class="mt-4 border border-hairline bg-white p-4">
+    <summary class="label cursor-pointer text-red">Transcript</summary>
+    <div id={transcriptId} class="measure mt-4 text-muted">
+      <slot>
+        <!-- TODO: confirm — paste the full transcript here. Every video on this
+             site needs one, so the words are readable without playing it. -->
+        <p>TODO: confirm &mdash; full transcript.</p>
+      </slot>
+    </div>
+  </details>
+</article>
