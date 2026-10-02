@@ -69,3 +69,21 @@ data; the follow endpoints require authenticated sessions.
 - The follow endpoints for Twitter and YouTube require OAuth user context
   that this scaffold doesn't provision; they return a structured result so
   callers can plug their own OAuth flow in.
+
+## Browser automation (agent-browser)
+
+[agent-browser](https://github.com/vercel-labs/agent-browser) is set up for
+Claude Code on the web via a SessionStart hook
+(`.claude/hooks/setup-agent-browser.sh`). It installs the CLI, installs
+`certutil`, and points agent-browser at the pre-installed Chromium and the
+session proxy's CA bundle. Example:
+
+```bash
+agent-browser open https://example.com
+agent-browser snapshot          # accessibility tree with @refs
+agent-browser click @e1
+agent-browser screenshot page.png
+agent-browser close
+```
+
+Run `agent-browser skills get core --full` for the full usage guide.
