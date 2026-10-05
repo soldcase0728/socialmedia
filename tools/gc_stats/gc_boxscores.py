@@ -167,7 +167,7 @@ def ensure_signed_in(ctx: BrowserContext, page: Page, url: str) -> Page:
     data = load_box_score(page, url)
     while data["blurred"]:
         print("\nBox scores are blurred, so you're not signed in yet.")
-        print("1. Sign in to GameChanger in the Chrome window this script opened.")
+        print("1. Sign in to GameChanger in the Chrome window this script is using.")
         print("   Leave that window open when you're done (don't close or quit it).")
         answer = input("2. Come back here and press Enter (or type q to quit): ")
         if answer.strip().lower() == "q":
@@ -277,6 +277,8 @@ def main() -> None:
     ap.add_argument("--out", default="stats_out", help="output folder (default: stats_out)")
     ap.add_argument("--profile", default=str(Path.home() / ".gc-scraper-profile"),
                     help="Chrome profile folder that keeps your GameChanger login")
+    ap.add_argument("--cdp", metavar="URL",
+                    help="attach to a Chrome you started yourself, e.g. http://localhost:9222")
     ap.add_argument("--delay", type=float, default=1.5, help="seconds to wait between games")
     args = ap.parse_args()
 
@@ -294,12 +296,22 @@ def main() -> None:
     combined, all_warnings = [], []
 
     with sync_playwright() as p:
-        try:
-            ctx = p.chromium.launch_persistent_context(
-                args.profile, channel="chrome", headless=False, chromium_sandbox=True)
-        except Exception:  # noqa: BLE001 - Chrome not installed; use Playwright's Chromium
-            ctx = p.chromium.launch_persistent_context(args.profile, headless=False, chromium_sandbox=True)
-        page = ctx.pages[0] if ctx.pages else ctx.new_page()
+        if args.cdp:
+            # Attach to a Chrome window you started and signed in to yourself.
+            try:
+                browser = p.chromium.connect_over_cdp(args.cdp)
+            except PlaywrightError:
+                sys.exit(f"Couldn't connect to Chrome at {args.cdp}. Start Chrome with "
+                         "--remote-debugging-port=9222 first (see README).")
+            ctx = browser.contexts[0] if browser.contexts else browser.new_context()
+            page = ctx.new_page()
+        else:
+            try:
+                ctx = p.chromium.launch_persistent_context(
+                    args.profile, channel="chrome", headless=False, chromium_sandbox=True)
+            except Exception:  # noqa: BLE001 - Chrome not installed; use Playwright's Chromium
+                ctx = p.chromium.launch_persistent_context(args.profile, headless=False, chromium_sandbox=True)
+            page = ctx.pages[0] if ctx.pages else ctx.new_page()
         for url in urls:
             result = scrape_team(ctx, page, url, args.delay)
             if not result:
@@ -311,7 +323,10 @@ def main() -> None:
             print_table(team["name"], totals)
             combined += [{"team": team["name"], **r} for r in totals]
             all_warnings += [f"{team['name']}: {w}" for w in warnings]
-        ctx.close()
+        if args.cdp:
+            page.close()  # leave your own Chrome window running
+        else:
+            ctx.close()
 
     if combined:
         write_csv(out / "all_teams_batting_totals.csv", combined, ["team"] + cols)
