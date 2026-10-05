@@ -24,6 +24,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from playwright.sync_api import BrowserContext, Page, sync_playwright
+from playwright.sync_api import Error as PlaywrightError
 
 API = "https://api.team-manager.gc.com/public"
 TEAM_URL_RE = re.compile(r"web\.gc\.com/teams/([A-Za-z0-9]+)/([^/?#]+)")
@@ -154,17 +155,35 @@ def load_box_score(page: Page, url: str) -> dict:
     return page.evaluate(EXTRACT_JS)
 
 
-def ensure_signed_in(page: Page, url: str) -> None:
+def live_page(ctx: BrowserContext, page: Page) -> Page:
+    """Return an open tab, opening a new one if the user closed ours."""
+    if not page.is_closed():
+        return page
+    open_pages = [pg for pg in ctx.pages if not pg.is_closed()]
+    return open_pages[-1] if open_pages else ctx.new_page()
+
+
+def ensure_signed_in(ctx: BrowserContext, page: Page, url: str) -> Page:
     data = load_box_score(page, url)
-    if not data["blurred"]:
-        return
-    print("\nBox scores are blurred, so you're not signed in yet.")
-    print("Sign in to GameChanger in the Chrome window that just opened,")
-    input("then come back here and press Enter... ")
-    data = load_box_score(page, url)
-    if data["blurred"]:
-        sys.exit("Still blurred after signing in. This account may not have access "
-                 "to these box scores (fan subscription or team invite needed).")
+    while data["blurred"]:
+        print("\nBox scores are blurred, so you're not signed in yet.")
+        print("1. Sign in to GameChanger in the Chrome window this script opened.")
+        print("   Leave that window open when you're done (don't close or quit it).")
+        answer = input("2. Come back here and press Enter (or type q to quit): ")
+        if answer.strip().lower() == "q":
+            sys.exit("Stopped.")
+        try:
+            page = live_page(ctx, page)
+            data = load_box_score(page, url)
+        except PlaywrightError as e:
+            if "closed" in str(e).lower():
+                sys.exit("The Chrome window was closed. Run the script again; "
+                         "if you finished signing in, it will remember you.")
+            raise
+        if data["blurred"]:
+            print("Still blurred. Make sure the sign-in finished, then try again.\n"
+                  "(If it stays blurred, this account can't see these box scores.)")
+    return page
 
 
 def scrape_team(ctx: BrowserContext, page: Page, team_url: str, delay: float):
@@ -181,7 +200,7 @@ def scrape_team(ctx: BrowserContext, page: Page, team_url: str, delay: float):
 
     base = f"https://web.gc.com/teams/{team_id}/{slug}/schedule"
     if done:
-        ensure_signed_in(page, f"{base}/{done[0]['id']}/box-score")
+        page = ensure_signed_in(ctx, page, f"{base}/{done[0]['id']}/box-score")
 
     by_game, warnings = [], []
     for g in done:
@@ -189,6 +208,7 @@ def scrape_team(ctx: BrowserContext, page: Page, team_url: str, delay: float):
         date = g.get("start_ts", "")[:10]
         label = f"{date} {'@' if g.get('home_away') == 'away' else 'vs.'} {opp}"
         try:
+            page = live_page(ctx, page)
             data = load_box_score(page, f"{base}/{g['id']}/box-score")
         except Exception as e:  # noqa: BLE001 - report and keep going
             warnings.append(f"{label}: could not load box score ({e.__class__.__name__})")
@@ -209,7 +229,7 @@ def scrape_team(ctx: BrowserContext, page: Page, team_url: str, delay: float):
         for l in lines:
             by_game.append({"date": date, "opponent": opp, "game_id": g["id"], **l})
         time.sleep(delay)
-    return team, slug, by_game, warnings
+    return team, slug, by_game, warnings, page
 
 
 def aggregate(by_game: list[dict]) -> list[dict]:
@@ -283,7 +303,7 @@ def main() -> None:
             result = scrape_team(ctx, page, url, args.delay)
             if not result:
                 continue
-            team, slug, by_game, warnings = result
+            team, slug, by_game, warnings, page = result
             totals = aggregate(by_game)
             write_csv(out / f"{slug}_batting_totals.csv", totals, cols)
             write_csv(out / f"{slug}_batting_by_game.csv", by_game, game_cols)
