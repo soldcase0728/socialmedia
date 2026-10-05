@@ -295,9 +295,10 @@ def main() -> None:
 
     with sync_playwright() as p:
         try:
-            ctx = p.chromium.launch_persistent_context(args.profile, channel="chrome", headless=False)
+            ctx = p.chromium.launch_persistent_context(
+                args.profile, channel="chrome", headless=False, chromium_sandbox=True)
         except Exception:  # noqa: BLE001 - Chrome not installed; use Playwright's Chromium
-            ctx = p.chromium.launch_persistent_context(args.profile, headless=False)
+            ctx = p.chromium.launch_persistent_context(args.profile, headless=False, chromium_sandbox=True)
         page = ctx.pages[0] if ctx.pages else ctx.new_page()
         for url in urls:
             result = scrape_team(ctx, page, url, args.delay)
